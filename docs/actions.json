@@ -1,0 +1,1150 @@
+{
+  "version": 1,
+  "actions": [
+    {
+      "action": "dy_get_video_detail",
+      "description": "读取作品原始详情与字幕轨道；网页失败时使用私信分享详情接口",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          }
+        },
+        "required": [
+          "aweme_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_video_subtitles",
+      "description": "读取作品原生字幕，返回纯文本和秒制时间轴（不执行语音识别）",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "language": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 32
+          },
+          "track_index": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 31
+          }
+        },
+        "required": [
+          "aweme_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_user_info",
+      "description": "按 sec_user_id 查询抖音用户资料",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "sec_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "sec_user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_user_posts",
+      "description": "游标分页查询用户作品",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "sec_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "max_cursor": {
+            "default": "0",
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "count": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "sec_user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_user_posts_count",
+      "description": "按数量聚合用户作品（最多 1000 条）",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "sec_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "target_count": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          }
+        },
+        "required": [
+          "sec_user_id",
+          "target_count"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_user_posts_page",
+      "description": "按页码查询用户作品（顺序遍历游标）",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "sec_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "page": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "page_size": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "sec_user_id",
+          "page"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_create_conversation",
+      "description": "为原生用户 UID 创建私信会话",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "native_user_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          }
+        },
+        "required": [
+          "native_user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_fetch_stranger_messages",
+      "description": "分页获取陌生人会话或指定会话的消息（不清除未读）",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "count": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          },
+          "cursor": {
+            "default": "0",
+            "type": "string",
+            "pattern": "^\\d{1,19}(?::\\d{1,6})?$"
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_send_stranger_msg",
+      "description": "按 sec_user_id 创建会话并发送私信",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "sec_user_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "sec_user_id",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_send_conversation_msg",
+      "description": "按原生会话信息发送文本",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "is_group": {
+            "default": false,
+            "type": "boolean"
+          },
+          "native_user_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false,
+        "examples": [
+          {
+            "native_user_id": "请替换为抖音数字UID",
+            "text": "你好"
+          }
+        ]
+      }
+    },
+    {
+      "action": "dy_upload_image",
+      "description": "上传私信图片并返回加密图片资源",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 22369641
+          }
+        },
+        "required": [
+          "image_base64"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_send_image",
+      "description": "向会话发送已上传资源或 Base64 图片",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "is_group": {
+            "default": false,
+            "type": "boolean"
+          },
+          "native_user_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "image_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 22369641
+          },
+          "image": {
+            "type": "object",
+            "properties": {
+              "oid": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 10000
+              },
+              "skey": {
+                "type": "string",
+                "pattern": "^[a-f\\d]{64}$"
+              },
+              "md5": {
+                "type": "string",
+                "pattern": "^[a-f\\d]{32}$"
+              },
+              "dataSize": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 16777216
+              },
+              "width": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 32768
+              },
+              "height": {
+                "type": "integer",
+                "exclusiveMinimum": 0,
+                "maximum": 32768
+              },
+              "format": {
+                "type": "string",
+                "enum": [
+                  "jpeg",
+                  "png",
+                  "gif",
+                  "webp",
+                  "heic"
+                ]
+              }
+            },
+            "required": [
+              "oid",
+              "skey",
+              "md5",
+              "dataSize",
+              "width",
+              "height"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false,
+        "examples": [
+          {
+            "native_user_id": "请替换为抖音数字UID",
+            "image_base64": "请替换为图片Base64内容"
+          }
+        ]
+      }
+    },
+    {
+      "action": "dy_list_dynamic_emojis",
+      "description": "列出内置动态表情名称及资源信息",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_send_dynamic_emoji",
+      "description": "向会话发送动态表情，可指定新资源 URL",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "is_group": {
+            "default": false,
+            "type": "boolean"
+          },
+          "native_user_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "url": {
+            "type": "string",
+            "maxLength": 4096,
+            "format": "uri"
+          },
+          "width": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 32768
+          },
+          "height": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 32768
+          },
+          "image_type": {
+            "type": "string",
+            "enum": [
+              "png",
+              "gif",
+              "webp",
+              "jpeg"
+            ]
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "additionalProperties": false,
+        "examples": [
+          {
+            "native_user_id": "请替换为抖音数字UID",
+            "name": "比心"
+          }
+        ]
+      }
+    },
+    {
+      "action": "dy_send_video_card",
+      "description": "向会话分享抖音作品卡片",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "conversation_id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "conversation_short_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "is_group": {
+            "default": false,
+            "type": "boolean"
+          },
+          "native_user_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "item_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        },
+        "required": [
+          "item_id"
+        ],
+        "additionalProperties": false,
+        "examples": [
+          {
+            "native_user_id": "请替换为抖音数字UID",
+            "item_id": "请替换为作品数字ID"
+          }
+        ]
+      }
+    },
+    {
+      "action": "dy_get_video_comments",
+      "description": "分页获取作品评论",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "cursor": {
+            "default": "0",
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "count": {
+            "default": 20,
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        "required": [
+          "aweme_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_comment_video",
+      "description": "发布文字评论",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          }
+        },
+        "required": [
+          "aweme_id",
+          "text"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_comment_video_image",
+      "description": "使用已上传的评论图片发布图文评论",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "text": {
+            "default": "",
+            "type": "string",
+            "maxLength": 10000
+          },
+          "image_uri": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 10000
+          },
+          "width": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 32768
+          },
+          "height": {
+            "type": "integer",
+            "exclusiveMinimum": 0,
+            "maximum": 32768
+          },
+          "image_format": {
+            "default": "jpeg",
+            "type": "string",
+            "enum": [
+              "jpeg",
+              "png",
+              "gif",
+              "webp"
+            ]
+          }
+        },
+        "required": [
+          "aweme_id",
+          "image_uri",
+          "width",
+          "height"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_upload_comment_image",
+      "description": "上传评论图片并返回 URI 和实际尺寸",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "image_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 22369641
+          }
+        },
+        "required": [
+          "image_base64"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_upload_image_and_comment",
+      "description": "上传图片并发布图文评论",
+      "params": {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "aweme_id": {
+            "type": "string",
+            "pattern": "^\\d{1,30}$"
+          },
+          "text": {
+            "default": "",
+            "type": "string",
+            "maxLength": 10000
+          },
+          "image_base64": {
+            "type": "string",
+            "minLength": 4,
+            "maxLength": 22369641
+          }
+        },
+        "required": [
+          "aweme_id",
+          "image_base64"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_version_info",
+      "description": "运行时版本",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_status",
+      "description": "账号在线状态",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_login_info",
+      "description": "当前登录用户",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_friend_list",
+      "description": "好友列表",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_group_list",
+      "description": "群列表",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_group_info",
+      "description": "查询群信息",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "no_cache": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_group_member_list",
+      "description": "群成员列表",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "group_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_group_member_info",
+      "description": "查询群成员",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "user_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "no_cache": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_id",
+          "user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_stranger_info",
+      "description": "查询已知用户资料（当前好友）",
+      "params": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "no_cache": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "send_private_msg",
+      "description": "发送私信",
+      "params": {
+        "type": "object",
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "auto_escape": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "user_id",
+          "message"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "send_group_msg",
+      "description": "发送群消息",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "auto_escape": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_id",
+          "message"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "send_msg",
+      "description": "发送消息",
+      "params": {
+        "type": "object",
+        "properties": {
+          "message_type": {
+            "enum": [
+              "private",
+              "group"
+            ]
+          },
+          "user_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            ]
+          },
+          "auto_escape": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "message"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "get_msg",
+      "description": "读取本地消息缓存",
+      "params": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "delete_msg",
+      "description": "撤回消息",
+      "params": {
+        "type": "object",
+        "properties": {
+          "message_id": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "message_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "set_group_name",
+      "description": "修改群名（原生适配器暂不支持）",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "group_name": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "group_id",
+          "group_name"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "set_group_leave",
+      "description": "退出群组",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "is_dismiss": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "set_group_kick",
+      "description": "移除群成员",
+      "params": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "user_id": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "reject_add_request": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "group_id",
+          "user_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "set_friend_add_request",
+      "description": "处理好友申请（原生适配器暂不支持）",
+      "params": {
+        "type": "object",
+        "properties": {
+          "flag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "approve": {
+            "type": "boolean"
+          },
+          "remark": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "flag"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "set_group_add_request",
+      "description": "审核加群申请",
+      "params": {
+        "type": "object",
+        "properties": {
+          "flag": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sub_type": {
+            "enum": [
+              "add",
+              "invite"
+            ]
+          },
+          "type": {
+            "enum": [
+              "add",
+              "invite"
+            ]
+          },
+          "approve": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "flag"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "can_send_image",
+      "description": "是否提供图片动作",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "can_send_record",
+      "description": "是否提供语音动作",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_list_accounts",
+      "description": "列出运行中的账号",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_capabilities",
+      "description": "动作及消息段兼容范围",
+      "params": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_resolve_id",
+      "description": "将原生字符串 ID 映射为 OneBot ID",
+      "params": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "user",
+              "group",
+              "message"
+            ]
+          },
+          "native_id": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "kind",
+          "native_id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    {
+      "action": "dy_get_native_id",
+      "description": "还原原生字符串 ID",
+      "params": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "enum": [
+              "user",
+              "group",
+              "message"
+            ]
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        "required": [
+          "kind",
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    }
+  ]
+}

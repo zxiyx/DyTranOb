@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>DyTranOb · 开发文档</title><style>
+:root{color-scheme:light;font-family:'Segoe UI','Microsoft YaHei',sans-serif;color:#35433c;background:#f8faf8;font-size:14px;line-height:1.9}*{box-sizing:border-box}body{margin:0}a{color:#327152;text-decoration:none}a:hover{text-decoration:underline}a:focus-visible{outline:3px solid #94bca2;outline-offset:4px}.sidebar{position:fixed;inset:0 auto 0 0;width:250px;background:#fff;border-right:1px solid #e7ede8;padding:35px 26px;display:flex;flex-direction:column}.brand{font-size:25px;color:#254b33;font-weight:700;letter-spacing:-1px}.brand small{display:block;font-size:9px;letter-spacing:2px;font-weight:400;color:#91a296;margin-top:3px}.sidebar nav{margin-top:35px;display:grid;gap:8px}.sidebar nav a{font-size:12px;padding:9px 12px;border-radius:6px;color:#748679}.sidebar nav a:hover{background:#f0f6f1;text-decoration:none;color:#3b7250}.back{margin-top:auto;font-size:11px;color:#93a399}main{margin-left:250px;max-width:1250px;padding:48px 60px 70px}header{border-bottom:1px solid #e4ebe5;padding-bottom:30px;margin-bottom:40px}.version{font:10px Consolas,monospace;padding:3px 7px;background:#eef5ef;border:1px solid #dde9df;border-radius:4px;color:#7a9b83}.intro{font-size:28px;font-weight:600;letter-spacing:.3px;margin:12px 0 8px}header p{font-size:12px;color:#8a9d8f;max-width:600px}section{padding-top:15px;margin-bottom:65px;scroll-margin-top:25px}.chapter-label{font:8px Consolas,monospace;letter-spacing:1.8px;color:#9aada0}h1{font-size:25px;font-weight:600;line-height:1.5;margin:9px 0 20px;color:#2a4d35}h2{font-size:17px;font-weight:600;margin:35px 0 12px;padding-bottom:8px;border-bottom:1px solid #e7ede8;color:#42614b}h3{font-size:14px;margin:25px 0 10px}p{font-size:12px;color:#74857a;margin:12px 0}strong{color:#526c59;font-weight:600}li{font-size:12px;color:#798b7f;margin:7px 0}ul,ol{padding-left:22px}code{font:10px/1.8 Consolas,'Courier New',monospace;background:#edf3ee;color:#5a7c63;padding:2px 5px;border-radius:3px}pre code{font-size:11px;line-height:1.9;background:none;padding:0;white-space:pre}pre{margin:0;overflow:auto;padding:20px 22px;tab-size:2}.codeblock{background:#f1f6f2;border:1px solid #e2ece4;border-radius:8px;margin:18px 0;position:relative;overflow:hidden}.language{display:block;text-align:right;padding:7px 12px 0;color:#a0b2a5;font:8px Consolas,monospace;letter-spacing:.7px}.codeblock pre{padding-top:9px}.table-wrap{overflow:auto;border:1px solid #e1e9e3;border-radius:8px;margin:18px 0;background:#fff}table{border-collapse:collapse;min-width:100%;font-size:11px}th{text-align:left;background:#f2f7f3;color:#647f6c;font-weight:600}td,th{padding:11px 13px;border-bottom:1px solid #eaf0eb;vertical-align:top}td{color:#84968a}td code{font-size:9px}tr:last-child td{border-bottom:0}footer{font-size:10px;color:#9eb0a3;border-top:1px solid #e3ebe5;padding-top:20px}.notice{padding:15px 18px;background:#f0f6f1;border:1px solid #dceade;border-radius:8px;font-size:11px;color:#799581}.source-links{margin-top:15px;font-size:10px}.source-links a{margin-right:14px}@media(max-width:1000px){.sidebar{width:215px;padding:30px 22px}main{margin-left:215px;padding:35px}}@media(max-width:700px){.sidebar{position:static;width:100%;padding:22px;border-right:0;border-bottom:1px solid #e4ece6}.brand{font-size:22px}.sidebar nav{display:flex;flex-wrap:wrap;gap:4px;margin-top:18px}.sidebar nav a{font-size:10px;padding:5px 8px}.back{margin-top:15px;font-size:10px}main{margin-left:0;padding:28px 20px}.intro{font-size:24px}h1{font-size:22px}h2{font-size:16px}.chapter-label{font-size:7px}section{margin-bottom:45px}table{min-width:650px}pre{padding:15px}pre code{font-size:10px}}@media print{.sidebar{display:none}main{margin:0;padding:0;max-width:none}.table-wrap{overflow:visible}table{min-width:0}.codeblock{break-inside:avoid}a{color:inherit}}
+</style></head><body><aside class="sidebar"><a class="brand" href="/">DyTranOb<small>DEVELOPER DOCUMENTATION</small></a><nav aria-label="文档章节"><a href="#architecture">01　架构</a><a href="#configuration">02　配置与运行</a><a href="#api">03　动作与事件</a><a href="#extensions">04　抖音扩展与媒体</a><a href="#astrbot">05　AstrBot 接口手册</a><a href="#transports">06　传输、SDK 与 MCP</a><a href="#development">07　扩展与测试</a><a href="#security">08　安全与运维</a></nav><a class="back" href="/">← 返回运行时控制台</a></aside><main><header><span class="version">v0.1.0 · ONEBOT V11</span><div class="intro">开发文档</div><p>从原生会话到统一动作与事件。了解运行时架构、账号配置、协议边界与各入口的接入方式。</p><div class="notice">首版实现：自动化测试与离线演示使用 Mock / SDK 替身；尚未使用真实抖音账号完成端到端验收。项目不包含插件系统。</div><div class="source-links"><a href="https://github.com/zhinjs/douyin-im" target="_blank" rel="noopener noreferrer">douyin-im ↗</a><a href="https://github.com/botuniverse/onebot-11" target="_blank" rel="noopener noreferrer">OneBot v11 ↗</a><a href="https://github.com/modelcontextprotocol/typescript-sdk" target="_blank" rel="noopener noreferrer">MCP SDK ↗</a></div></header><section id="architecture"><div class="chapter-label">DYTRANOB DOCUMENTATION / ARCHITECTURE</div><h1>架构</h1>
+<p>DyTranOb 将原生会话与外部接入分离。HTTP、WebSocket、WebUI、SDK 与 MCP 最终进入同一个 <code>Runtime.execute</code>，避免各入口各自维护业务行为。</p>
+<div class="codeblock"><span class="language">text</span><pre><code>抖音 IM / Mock
+      │ NativeAdapter：字符串 ID、原生事件与操作
+      ▼
+Runtime：账号选择 → ID 映射 → OneBot 事件 / 动作
+      │                      │
+      │ RuntimeStore         └─ 动作调度 → NativeAdapter
+      ▼
+HTTP / WS / SSE / webhook / 反向 WS
+      │
+      ├─ 浅色 WebUI
+      ├─ Node.js SDK
+      └─ MCP stdio 服务</code></pre></div>
+<h2>核心模块</h2>
+<div class="table-wrap"><table><thead><tr><th>模块</th><th>职责</th></tr></thead><tbody><tr><td><code>src/adapters/types.ts</code></td><td>与传输无关的 <code>NativeAdapter</code>、消息、用户、群与事件类型</td></tr><tr><td><code>src/adapters/douyin.ts</code></td><td><code>douyin-im@1.1.0</code> 公开接口、二维码登录、原生消息与操作</td></tr><tr><td><code>src/adapters/mock.ts</code></td><td>无需真实账号的可复现开发适配器</td></tr><tr><td><code>src/runtime.ts</code></td><td>账号隔离、动作目录、OneBot 转换、消息去重</td></tr><tr><td><code>src/store.ts</code></td><td>ID 别名和最近消息持久化、数据目录锁</td></tr><tr><td><code>src/messages.ts</code></td><td>CQ 字符串与消息段数组的解析、转义与输出</td></tr><tr><td><code>src/server.ts</code></td><td>认证、HTTP / WS / SSE、webhook、反向 WS、静态文件</td></tr><tr><td><code>src/connections.ts</code></td><td>网络连接 CRUD、独立传输生命周期、配置持久化与变更回滚</td></tr><tr><td><code>src/logger.ts</code></td><td>时间 / 级别 / 来源格式、凭据脱敏、独立终端凭据输出</td></tr><tr><td><code>src/sdk.ts</code></td><td>Node.js HTTP / WebSocket 客户端</td></tr><tr><td><code>src/mcp.ts</code></td><td>MCP 工具白名单与读写边界</td></tr><tr><td><code>src/config.ts</code>、<code>src/cli.ts</code></td><td>配置校验、命令行、生命周期</td></tr></tbody></table></div>
+<h2>事件流与动作流</h2>
+<p>适配器发布 <code>NativeEvent</code>。每个账号使用独立的 Promise 队列处理原生事件，保留该账号内的处理顺序；运行时将用户、群与消息字符串 ID 映射为数字，生成 OneBot 事件，并写入本地缓存后向接入层发布。</p>
+<p>动作请求包含 <code>action</code>、<code>params</code>，以及可选 <code>account_id</code> / <code>self_id</code>。调度器选定账号、反查数字 ID、解析消息段，再调用原生适配器。响应统一为 <code>status</code>、<code>retcode</code>、<code>data</code> 与可选 <code>echo</code>。请求和事件里的 <code>account_id</code> 是本项目扩展字段。</p>
+<p>单账号时省略账号选择器即可；多账号的账号相关动作必须指定 <code>account_id</code> 或 <code>self_id</code>。同时填写两个选择器时，二者必须指向同一个账号。<code>get_status</code> 无选择器时返回全局状态。</p>
+<h2>ID 与存储模型</h2>
+<p>抖音 ID 可能超过 JavaScript 安全整数范围，因此原生 ID 始终保持字符串。禁止对原生 ID 使用 <code>Number()</code>、<code>parseInt()</code> 或浮点 JSON 字段。</p>
+<p>映射键是 <code>[account_id, kind, native_id]</code>，其中 <code>kind</code> 为 <code>user</code>、<code>group</code> 或 <code>message</code>。运行时为其分配 1 到 2147483647 的递增整数别名。相同原生 ID 在不同账号或不同类型中拥有独立映射；反查错误类型、未知 ID 或跨账号 ID 会失败。</p>
+<p>映射与最近 5000 条消息保存到 <code>dataDir/onebot-store.json</code>。新增映射先写临时文件再重命名，成功后才对外返回别名。保留相同 <code>account_id</code> 与数据目录可在重启后继续使用原有别名。更换数据目录或删除映射后，旧别名不可继续使用。该文件包含消息正文，备份时按会话敏感数据处理。</p>
+<p>数据目录使用 <code>runtime.lock</code> 防止两个进程同时写入。发现旧锁时会检查进程是否仍然存在；不要让多个实例共用数据目录。</p>
+<p><code>ConnectionManager</code> 由 CLI 启动，复用相同的 <code>Runtime</code>，为每个网络连接管理独立的传输生命周期；新增连接不会创建额外的抖音会话。连接列表与递增修订号原子保存到 <code>dataDir/connections.json</code>。变更按顺序执行，持久化或监听失败时不接受新设置；WebUI 的配置状态以服务端返回为准。</p>
+<p>控制台端口提供管理 API、WebUI 与文档；连接级别的 HTTP / WS 监听只提供对应 OneBot 入口与最小存活检查，不开放管理 API。WebUI 在 Token 验证成功后才初始化账号、动作、事件与连接视图；每次访问数据接口仍独立校验 Bearer 凭据。</p>
+<h2>缓存与投递保证</h2>
+<ul><li><code>get_msg</code> 读取本地最近 5000 条消息，不查询完整云端历史。</li><li>HTTP 最近事件保留本次运行的最近 200 条；WebUI 只在标签页内保留最近 300 条。</li><li>同一账号的原生消息 ID 用于有限去重。去重集合有界，重启后重新建立。</li><li>WS、SSE 与 webhook 提供在线事件分发，不提供持久化消费位点、完整补发或恰好一次保证。业务消费者应按账号与 <code>message_id</code> 自行去重。</li><li>原生撤回和引用所需的会话路由仅在当前进程中保留；重启后的旧消息即使仍能 <code>get_msg</code>，也不保证可撤回或引用。</li></ul>
+<h2>设计边界</h2>
+<p>OneBot 是互操作接口，并不使抖音具备 QQ 的全部功能。不存在的原生能力必须返回明确错误，不能用本地假成功替代。Mock 模式用于开发协议行为，不作为原生能力的证据。真实账号依赖上游 SDK、平台状态、权限与验证流程。</p></section>
+<section id="configuration"><div class="chapter-label">DYTRANOB DOCUMENTATION / CONFIGURATION</div><h1>配置与运行</h1>
+<h2>环境与启动</h2>
+<p>要求 Node.js 22.5 或更高版本。原生 SDK 使用 Node.js 内置 SQLite，旧版本 Node.js 无法满足运行要求。建议使用受支持的近期 Node.js 版本。</p>
+<p>Windows 双击根目录 <code>launcher.bat</code>，程序会一直在 CMD 前台运行。服务就绪后显示 WebUI 地址、当前生效的 Token、HTTP / WebSocket 地址与账号状态；手动打开地址并输入 Token。退出时按 <code>Ctrl+C</code>，启动失败时窗口会保留错误信息。</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>npm install
+npm run dev -- --mock</code></pre></div>
+<p>离线演示会选择 <code>demo</code> 账号并使用当前工作目录下的 <code>data/demo</code>，不访问抖音账号。WebUI 地址默认是 <code>http://127.0.0.1:5088</code>。打开后先显示独立的 Token 登录页；验证成功后才显示控制台、账号与网络配置。登录失败时停留在登录页并显示原因。</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>npm run dev -- --config dytranob.config.json
+npm run build
+npm start -- --config dytranob.config.json</code></pre></div>
+<p>未指定 <code>--config</code> 时，CLI 自动寻找当前目录的 <code>dytranob.config.json</code>，否则使用默认配置。<code>--mock</code> 会覆盖账号与数据目录设置。可用 <code>--host</code>、<code>--port</code> 覆盖监听地址。<code>--help</code> 显示完整选项。</p>
+<h2>配置示例</h2>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;server&quot;: {
+    &quot;host&quot;: &quot;127.0.0.1&quot;,
+    &quot;port&quot;: 5088,
+    &quot;token&quot;: &quot;&quot;,
+    &quot;onebotToken&quot;: &quot;&quot;,
+    &quot;allowRemote&quot;: false
+  },
+  &quot;dataDir&quot;: &quot;./data&quot;,
+  &quot;accounts&quot;: [
+    { &quot;id&quot;: &quot;main&quot;, &quot;type&quot;: &quot;douyin&quot; }
+  ],
+  &quot;heartbeatInterval&quot;: 15000,
+  &quot;connections&quot;: [
+    {
+      &quot;id&quot;: &quot;bot-ws&quot;,
+      &quot;name&quot;: &quot;机器人 WebSocket&quot;,
+      &quot;type&quot;: &quot;ws&quot;,
+      &quot;enabled&quot;: true,
+      &quot;host&quot;: &quot;127.0.0.1&quot;,
+      &quot;port&quot;: 3001
+    }
+  ]
+}</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>配置项</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td><code>server.host</code></td><td><code>127.0.0.1</code></td><td>默认仅监听回环地址</td></tr><tr><td><code>server.port</code></td><td><code>5088</code></td><td>监听端口；<code>0</code> 为自动分配，实际端口见日志</td></tr><tr><td><code>server.token</code></td><td>空</td><td>WebUI / 管理令牌；为空时首次生成并固定保存到 <code>dataDir/webui.json</code>，重启复用</td></tr><tr><td><code>server.onebotToken</code></td><td>空</td><td>默认端口的标准 HTTP 动作和 WS 凭据；留空不鉴权，与 WebUI Token 独立</td></tr><tr><td><code>server.allowRemote</code></td><td><code>false</code></td><td>远程监听须显式开启，并配置访问令牌</td></tr><tr><td><code>dataDir</code></td><td><code>./data</code></td><td>相对配置文件目录解析；未指定配置文件时相对当前目录</td></tr><tr><td><code>accounts</code></td><td>一个 <code>main</code> 抖音账号</td><td>至少一个；<code>id</code> 不重复，允许 1–64 位字母、数字、下划线、连字符；<code>type</code> 为 <code>douyin</code> 或 <code>mock</code></td></tr><tr><td><code>heartbeatInterval</code></td><td><code>15000</code></td><td>心跳周期，毫秒；范围 1000–3600000</td></tr><tr><td><code>connections</code></td><td><code>[]</code></td><td>网络连接初始列表；最多 64 个，首次启动后由持久化文件管理</td></tr><tr><td><code>webhookUrls</code></td><td><code>[]</code></td><td>兼容旧配置：最多 16 个 HTTP(S) 地址，首次启动时迁移为 HTTP 上报连接</td></tr><tr><td><code>reverseWsUrls</code></td><td><code>[]</code></td><td>兼容旧配置：最多 16 个 WS(S) 地址，首次启动时迁移为反向 WS 连接</td></tr></tbody></table></div>
+<p>配置对象不接受未知顶层字段。账号、控制台监听地址和控制台 Token 在启动时读取，修改后需要重启；WebUI 中的网络连接保存后即时应用。</p>
+<h2>WebUI 网络连接</h2>
+<p>登录工作空间后打开「连接配置」，按连接类型筛选，点击「新增连接」设置名称、地址、令牌与启用状态。卡片可编辑、启用 / 停用或删除。保存会调用运行时接口并写入本地文件，刷新页面或重启后仍保留。</p>
+<div class="table-wrap"><table><thead><tr><th>类型</th><th><code>type</code></th><th>工作方式</th></tr></thead><tbody><tr><td>HTTP 服务端</td><td><code>http</code></td><td>新建独立 HTTP 监听端口，接收 OneBot 动作</td></tr><tr><td>WebSocket 服务端</td><td><code>ws</code></td><td>新建独立 WS 监听端口，提供动作与事件</td></tr><tr><td>HTTP 上报</td><td><code>http_post</code></td><td>将事件 POST 到 <code>url</code>，不创建监听端口</td></tr><tr><td>反向 WebSocket</td><td><code>ws_reverse</code></td><td>主动连接 <code>url</code>，双向交换动作与事件并自动重连</td></tr></tbody></table></div>
+<p>连接的公共字段为 <code>id</code>、<code>name</code>、<code>type</code>、<code>enabled</code>、<code>token</code> 和 <code>heartbeatInterval</code>。创建时省略 <code>id</code> 会自动生成；名称为 1–80 字符；<code>enabled</code> 默认为 <code>true</code>。心跳间隔默认 15000 毫秒，连接级别支持 <code>0</code> 关闭心跳，最大 3600000 毫秒。</p>
+<p>服务端连接额外使用 <code>host</code>、<code>port</code>、<code>allowRemote</code>，默认是 <code>127.0.0.1:3001</code> 与 <code>false</code>。端口 <code>0</code> 请求自动分配，卡片与 API 的 <code>actualPort</code> 显示实际端口；多个连接应使用不同监听端口。非本机监听必须显式开启 <code>allowRemote</code> 且有有效令牌。出站连接必须填写对应 HTTP(S) 或 WS(S) 的 <code>url</code>；令牌放在独立字段，不放在 URL 中。</p>
+<p>每个连接使用独立 OneBot Token；创建时留空表示不鉴权，不继承 WebUI Token，也不继承 <code>server.onebotToken</code>。Token 使用不含空格的可见 ASCII 字符，最多 4096 个字符。编辑时不填写新 Token 会保留原设置，明确提交 <code>token: &quot;&quot;</code> 则关闭该连接的鉴权。管理接口不返回令牌明文，<code>tokenConfigured</code> 仅表示是否设置了自定义 Token；未配置连接 Token 时为 <code>false</code>。目标 URL 不接受 <code>#fragment</code>、内嵌用户名密码或凭据查询参数。</p>
+<p>控制台 <code>server.port</code> 默认仍为 5088；WebUI、SDK、MCP 的 <code>/api/*</code>（包括 <code>/api/action</code> 调试）和 SSE 使用 WebUI Token。标准 OneBot 动作 <code>/action</code>、<code>/&lt;action&gt;</code>、<code>POST /</code> 以及 <code>/ws</code> 使用独立的 <code>server.onebotToken</code>。新增连接的端口只开放所选传输及 <code>/health</code>，不提供 WebUI、连接管理或账号登录管理接口。</p>
+<p>连接保存于 <code>dataDir/connections.json</code>，包含 <code>revision</code> 与连接列表。文件存在时优先读取该文件；配置中的 <code>connections</code> 和旧版 URL 数组只用于首次初始化。后续通过 WebUI 或 API 修改，不要在进程运行时手工编辑文件。无效文件会报告错误，不会静默覆盖。该文件可能含独立连接令牌，需与会话数据一起保管。</p>
+<p>连接变更会校验并尝试启动新设置；端口冲突或保存失败时返回错误并保留 / 恢复原设置。修改同一监听端口的 Token 等参数会短暂重启该连接，已有客户端需要重连；仅修改名称不重启传输。程序启动时个别连接无法监听会标记为错误，可在控制台修正。</p>
+<p>升级提示：旧连接中省略或留空的 <code>token</code> 现在表示不鉴权；若对端之前配置了 WebUI Token，请改为在两端填写相同的独立连接 Token。非本机监听仍需显式开启 <code>allowRemote</code> 并配置连接 Token。</p>
+<h2>令牌优先级</h2>
+<p><code>DYTRANOB_TOKEN</code> 环境变量优先于 <code>--token</code>，后者优先于配置文件。最终仍为空时，CLI 读取 <code>dataDir/webui.json</code> 的 <code>token</code>；文件尚不存在才生成一次并保存。重启、重建与重新打开 launcher 均复用该值。文件损坏时会报错，不会偷偷生成新值。可以在 <code>dytranob.config.json</code> 的 <code>server.token</code> 中固定指定自己的令牌。显式配置覆盖不会改写保存的自动令牌；移除覆盖后恢复使用原保存值。演示模式与正式模式各用自己的数据目录。</p>
+<p>PowerShell：</p>
+<div class="codeblock"><span class="language">powershell</span><pre><code>$env:DYTRANOB_TOKEN = 'your-long-random-token'
+npm run dev -- --mock</code></pre></div>
+<p>POSIX shell：</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>export DYTRANOB_TOKEN='your-long-random-token'
+npm run dev -- --mock</code></pre></div>
+<p>令牌不要放在仓库或 URL 中。WebUI 默认只在内存保存；用户勾选后仅在该标签页 <code>sessionStorage</code> 中保存。</p>
+<h2>原生账号登录</h2>
+<ol><li>配置 <code>type: &quot;douyin&quot;</code> 并启动。</li><li>打开 WebUI，在登录页填写 CMD 启动日志中的 Token，验证后进入控制台。</li><li>在账号会话中点击「扫码登录」，使用抖音 App 扫码并确认。</li><li>如需平台验证，点击 WebUI 中的本机验证链接并手动完成；运行时不自动绕过平台验证。</li><li>等待账号显示在线，再查询好友或发送消息。</li></ol>
+<p>启动时会尝试恢复已有会话。二维码状态和验证信息仅通过认证后的登录接口提供。二维码过期或登录失败后，可再次启动扫码流程；若上游 SDK 流程尚未退出，可重启运行时后重试。</p>
+<p>原生会话数据保存于 <code>dataDir/accounts/&lt;account_id&gt;</code>。不要重命名已使用的账号 ID 后继续复用旧 OneBot 别名。首次真实登录及平台验证需要网络；真实账号端到端行为尚未在本项目中验证。</p>
+<h2>多账号</h2>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;accounts&quot;: [
+    { &quot;id&quot;: &quot;work&quot;, &quot;type&quot;: &quot;douyin&quot; },
+    { &quot;id&quot;: &quot;personal&quot;, &quot;type&quot;: &quot;douyin&quot; }
+  ]
+}</code></pre></div>
+<p>每个账号使用独立原生会话目录。账号相关动作需指定 <code>account_id</code> 或已映射的 <code>self_id</code>，事件携带 <code>account_id</code> 与 <code>self_id</code>。扩展动作 <code>dy_list_accounts</code> 可查询当前账号。只有一个账号在线时，未指定账号的动作默认路由到该在线账号。</p>
+<p>也可以在 WebUI「运行概览 → 账号会话」中<strong>添加或移除账号</strong>，立即生效并保存到 <code>dataDir/accounts.json</code>；该文件存在时优先于配置文件的 <code>accounts</code>。移除账号只会让它下线，<code>dataDir/accounts/&lt;account_id&gt;</code> 中的登录会话保留，用相同 ID 重新添加即可恢复。对应管理接口为 <code>GET/POST /api/accounts</code>（请求体 <code>{ &quot;id&quot;: &quot;second&quot;, &quot;type&quot;: &quot;douyin&quot; }</code>）与 <code>DELETE /api/accounts/&lt;id&gt;</code>；至少保留一个账号。</p>
+<h2>Windows CMD</h2>
+<p>先安装 Node.js、在仓库目录运行 <code>npm install</code>。根目录提供：</p>
+<div class="table-wrap"><table><thead><tr><th>文件</th><th>用途</th></tr></thead><tbody><tr><td><code>launcher.bat</code></td><td>启动 CMD 控制台；<code>--mock</code> 为演示模式，支持转发 CLI 参数</td></tr><tr><td><code>start.cmd</code></td><td>启动配置的原生账号运行时</td></tr><tr><td><code>start-mock.cmd</code></td><td>启动无需账号的离线演示</td></tr><tr><td><code>dytranob.cmd</code></td><td>运行 CLI，包括状态查询与动作调用</td></tr><tr><td><code>mcp.cmd</code></td><td>启动 MCP stdio 桥接，stdout 保持为 JSON-RPC</td></tr></tbody></table></div>
+<p>在另一个 CMD 窗口中设置与已运行服务相同的令牌：</p>
+<div class="codeblock"><span class="language">bat</span><pre><code>set DYTRANOB_TOKEN=YOUR_TOKEN
+dytranob.cmd status
+dytranob.cmd call get_friend_list --account main
+dytranob.cmd call send_private_msg --params-file message.json --account main</code></pre></div>
+<p><code>message.json</code> 应为 UTF-8 JSON 对象，例如：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;user_id&quot;: 2,
+  &quot;message&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;data&quot;: { &quot;text&quot;: &quot;你好&quot; } }]
+}</code></pre></div>
+<p>将 <code>2</code> 替换为查询得到的真实 OneBot 用户别名。发送命令会影响实际账号。<code>--params-file</code> 可避免 CMD 的 JSON 引号转义问题；也支持 <code>--params JSON</code>。可用 <code>--url http://127.0.0.1:5088</code> 指定服务，以及 <code>--self-id</code> 代替 <code>--account</code>。</p>
+<p>CLI 动作输出 OneBot JSON 包装，失败时进程退出码为 1。脚本本身不提供插件功能。MCP 需要先启动运行时；生产编译方式为 <code>npm run build</code> 后执行 <code>node dist/cli.js ...</code>。</p>
+<h2>控制台日志</h2>
+<p>运行日志统一为「时间、消息类型、来源、信息」，级别与来源列对齐，例如：</p>
+<div class="codeblock"><span class="language">text</span><pre><code>[15:42:08.012] [INFO ] [Runtime]              DyTranOb v0.1.0 · Douyin OneBot v11 Runtime
+[15:42:08.014] [INFO ] [WebUI]                WebUI 地址 http://127.0.0.1:5088
+[15:42:08.015] [INFO ] [WebUI]                WebUI Token &lt;本次生效的 Token&gt;
+[15:42:09.200] [INFO ] [Account:001]          发出私聊消息 · user_id=5 · message_id=208 · 内容=你好，收到消息了
+[15:42:10.221] [WARN ] [Account:main]         连接断开，等待重连</code></pre></div>
+<p>收发消息日志包含正文、用户 / 消息 ID，以及适用的群 ID 和昵称；图片、视频、@ 和引用显示简短消息段摘要，不输出媒体 base64 或下载地址。</p>
+<p>日志级别为 <code>DEBUG</code>、<code>INFO</code>、<code>WARN</code>、<code>ERROR</code>；交互式终端按级别着色，可设置 <code>NO_COLOR</code> 关闭颜色。多行消息逐行带前缀，普通日志会清理终端控制字符并脱敏常见凭据。Token 使用独立的终端输出路径，不进入运行时诊断与 WebUI 事件流；当前版本不提供文件日志。日志写入 stderr，CLI 动作结果和 MCP 的 stdout 保持机器可读。</p>
+<h2>AstrBot 媒体地址</h2>
+<p>可选 <code>server.mediaPublicUrl</code> 设置 AstrBot 能访问的运行时基础 URL，默认使用主监听端口的本机地址。AstrBot 在 Docker 或远程主机时通常需要设置。媒体缓存默认 1 小时、128 MiB，不持久化；完整配置、重启后的图片测试和网页会话参数见 <a href="#extensions">抖音扩展与媒体接入</a>。</p></section>
+<section id="api"><div class="chapter-label">DYTRANOB DOCUMENTATION / API</div><h1>动作与事件</h1>
+<p>DyTranOb 实现 OneBot v11 的实用子集，并提供 <code>dy_*</code> 扩展。运行中可通过 <code>GET /api/actions</code> 获取当前的 45 个动作及参数 JSON Schema。目录包含协议入口，不代表每个原生账号均有权限执行。</p>
+<p>机器人接入的完整参数与返回说明见 <a href="#astrbot">AstrBot 接口手册</a>。静态机器可读 Schema 位于 <code>/docs/actions.json</code>；作品详情和字幕分别使用 <code>dy_get_video_detail</code>、<code>dy_get_video_subtitles</code>。</p>
+<h2>请求与响应</h2>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;action&quot;: &quot;send_private_msg&quot;,
+  &quot;account_id&quot;: &quot;main&quot;,
+  &quot;params&quot;: {
+    &quot;user_id&quot;: 2,
+    &quot;message&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;data&quot;: { &quot;text&quot;: &quot;你好&quot; } }]
+  },
+  &quot;echo&quot;: &quot;request-1&quot;
+}</code></pre></div>
+<p>示例中的 <code>user_id: 2</code> 是示意值，请使用好友列表或 <code>dy_resolve_id</code> 返回的实际别名。请求里的数字 ID 均是当前运行时映射后的 OneBot ID。</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;retcode&quot;: 0,
+  &quot;data&quot;: { &quot;message_id&quot;: 4 },
+  &quot;echo&quot;: &quot;request-1&quot;
+}</code></pre></div>
+<p>失败响应的 <code>status</code> 为 <code>failed</code>，<code>data</code> 为 <code>null</code>，并提供 <code>message</code> / <code>wording</code>。HTTP 200 仍可能包含动作失败，调用端必须检查 <code>status</code> 与 <code>retcode</code>。<code>echo</code> 原样返回。多账号需使用 <code>account_id</code> 或 <code>self_id</code> 选择账号，详见架构文档。</p>
+<h2>动作兼容矩阵</h2>
+<div class="table-wrap"><table><thead><tr><th>动作</th><th>主要参数</th><th>原生抖音适配器范围</th></tr></thead><tbody><tr><td><code>get_version_info</code></td><td>无</td><td>版本与协议信息</td></tr><tr><td><code>get_status</code></td><td>无</td><td>全局或选定账号状态</td></tr><tr><td><code>get_login_info</code></td><td>无</td><td>已登录用户</td></tr><tr><td><code>get_friend_list</code></td><td>无</td><td>原生好友列表</td></tr><tr><td><code>get_group_list</code></td><td>无</td><td>原生群列表</td></tr><tr><td><code>get_group_info</code></td><td><code>group_id</code></td><td>从群列表查找；未知人数用 0 占位</td></tr><tr><td><code>get_group_member_list</code></td><td><code>group_id</code></td><td>原生群成员列表；未公开角色等字段采用占位值</td></tr><tr><td><code>get_group_member_info</code></td><td><code>group_id</code>, <code>user_id</code></td><td>从群成员列表查找</td></tr><tr><td><code>get_stranger_info</code></td><td><code>user_id</code></td><td>仅当前好友中的已知用户资料</td></tr><tr><td><code>send_private_msg</code></td><td><code>user_id</code>, <code>message</code></td><td>文本、@ / 引用、HTTPS / Base64 图片；图文和多图按原顺序拆分发送</td></tr><tr><td><code>send_group_msg</code></td><td><code>group_id</code>, <code>message</code></td><td>同上；受原生群权限约束</td></tr><tr><td><code>send_msg</code></td><td><code>message</code>，目标 ID</td><td><code>message_type</code> 可选；同时存在两种目标时必须指定类型</td></tr><tr><td><code>get_msg</code></td><td><code>message_id</code></td><td>仅本地最近 5000 条消息缓存；账号离线仍可读取</td></tr><tr><td><code>delete_msg</code></td><td><code>message_id</code></td><td>当前运行期间已观察到路由与服务器 ID 的消息，受平台撤回限制</td></tr><tr><td><code>set_group_name</code></td><td><code>group_id</code>, <code>group_name</code></td><td>不支持：上游 1.1.0 无公开修改群名接口</td></tr><tr><td><code>set_group_leave</code></td><td><code>group_id</code></td><td>退出群；不支持 <code>is_dismiss: true</code></td></tr><tr><td><code>set_group_kick</code></td><td><code>group_id</code>, <code>user_id</code></td><td>受群权限约束；不支持 <code>reject_add_request: true</code></td></tr><tr><td><code>set_friend_add_request</code></td><td><code>flag</code>，可选 <code>approve</code></td><td>不支持：上游仅有好友申请通知</td></tr><tr><td><code>set_group_add_request</code></td><td><code>flag</code>，可选 <code>approve</code></td><td>仅当前进程收到的加群申请；不支持邀请审批及拒绝理由</td></tr><tr><td><code>can_send_image</code></td><td>无</td><td>返回 <code>yes: true</code>；具体图片与网络条件仍需检查</td></tr><tr><td><code>can_send_record</code></td><td>无</td><td>返回 <code>yes: false</code></td></tr><tr><td><code>dy_list_accounts</code></td><td>无</td><td>账号 ID、类型、在线状态与已知 self_id</td></tr><tr><td><code>dy_get_capabilities</code></td><td>无</td><td>运行时动作目录与限制说明</td></tr><tr><td><code>dy_resolve_id</code></td><td><code>kind</code>, <code>native_id</code></td><td>原生字符串 ID → 稳定本地整数别名</td></tr><tr><td><code>dy_get_native_id</code></td><td><code>kind</code>, <code>id</code></td><td>按选定账号反查原生字符串 ID</td></tr></tbody></table></div>
+<p><code>no_cache</code> 参数可用于协议兼容，不保证改变上游 SDK 的缓存策略。群成员 <code>role</code>、<code>sex</code>、<code>age</code>、<code>card</code> 等 QQ 字段没有完整抖音对应数据，不能据此作权限判断。</p>
+<p>QQ 专属功能（戳一戳、群荣誉、QQ 音乐卡片、QQ 空间、QQ 语音等）、群解散与其他未列出动作返回不支持。项目不包含插件系统。</p>
+<h2>消息格式</h2>
+<p>推荐使用消息段数组，亦接受文本或 CQ 字符串。<code>auto_escape: true</code> 时，字符串整体视为普通文本。</p>
+<div class="table-wrap"><table><thead><tr><th>消息段</th><th>OneBot 数据</th><th>原生适配器行为</th></tr></thead><tbody><tr><td><code>text</code></td><td><code>{ &quot;text&quot;: &quot;你好&quot; }</code></td><td>支持</td></tr><tr><td><code>at</code></td><td><code>{ &quot;qq&quot;: 2 }</code></td><td>使用映射后的用户 ID；群内 @；不支持全体 @</td></tr><tr><td><code>reply</code></td><td><code>{ &quot;id&quot;: 4 }</code></td><td>引用当前进程中已观察到的消息</td></tr><tr><td><code>image</code></td><td><code>{ &quot;file&quot;: &quot;https://...&quot; }</code></td><td>支持 HTTPS 或 base64:// 图片（最大 16 MiB）；图文 / 多图拆分发送，不接受服务端本地路径</td></tr><tr><td><code>video</code></td><td><code>{ &quot;file&quot;: &quot;https://...&quot; }</code></td><td>运行时模型保留此类型，原生发送明确不支持</td></tr></tbody></table></div>
+<p>入站图片 / 表情会下载、按需解密后转换成临时缓存 URL，兼容 AstrBot；原生视频没有可靠播放 URL 时仍返回文本占位。新增网页作品、评论、陌生人、动态表情和图片上传动作的参数与完整对照见 <a href="#extensions">抖音扩展与媒体接入</a>。</p>
+<h2>事件</h2>
+<p>事件含 <code>time</code>（秒）、<code>self_id</code>、<code>post_type</code>，账号原生事件额外含 <code>account_id</code>。消息采用数组形式 <code>message</code>，并提供 CQ 表达的 <code>raw_message</code>。保留原生字符串 ID 的消息扩展字段位于 <code>dy</code>。</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;time&quot;: 1700000000,
+  &quot;self_id&quot;: 1,
+  &quot;account_id&quot;: &quot;main&quot;,
+  &quot;post_type&quot;: &quot;message&quot;,
+  &quot;message_type&quot;: &quot;private&quot;,
+  &quot;sub_type&quot;: &quot;friend&quot;,
+  &quot;message_id&quot;: 4,
+  &quot;user_id&quot;: 2,
+  &quot;message&quot;: [{ &quot;type&quot;: &quot;text&quot;, &quot;data&quot;: { &quot;text&quot;: &quot;你好&quot; } }],
+  &quot;raw_message&quot;: &quot;你好&quot;,
+  &quot;sender&quot;: { &quot;user_id&quot;: 2, &quot;nickname&quot;: &quot;示例用户&quot; },
+  &quot;dy&quot;: { &quot;message_id&quot;: &quot;90071992547409931234&quot;, &quot;user_id&quot;: &quot;12345678901234567890&quot; }
+}</code></pre></div>
+<ul><li><code>message</code>：私信与群消息；群消息含 <code>group_id</code>。</li><li><code>message_sent</code>：本账号发出的消息回显，避免与入站消息混淆。</li><li><code>notice</code>：群成员增加 / 减少、好友增加、私信 / 群消息撤回，取决于上游事件与权限。</li><li><code>request</code>：好友或加群申请通知；<code>flag</code> 是申请句柄，不应当作用户 ID。好友通知不意味着可审批。</li><li><code>meta_event</code>：生命周期与心跳。未登录前的传输元事件可能使用 <code>self_id: 0</code>；在线后以实际映射 ID 为准。</li></ul>
+<h2>错误码</h2>
+<div class="table-wrap"><table><thead><tr><th>retcode</th><th>含义</th></tr></thead><tbody><tr><td><code>0</code></td><td>成功</td></tr><tr><td><code>1400</code></td><td>请求或参数无效、账号选择器冲突</td></tr><tr><td><code>1401</code></td><td>未认证或凭据错误</td></tr><tr><td><code>1403</code></td><td>跨源请求被拒绝</td></tr><tr><td><code>1404</code></td><td>不支持的动作 / 原生能力、未知账号或 ID、缓存中不存在</td></tr><tr><td><code>1405</code></td><td>HTTP 方法不允许</td></tr><tr><td><code>1413</code></td><td>请求体超过限制</td></tr><tr><td><code>1500</code></td><td>原生操作或运行时失败；查看本地诊断</td></tr><tr><td><code>1503</code></td><td>账号离线，需要恢复会话或完成登录</td></tr></tbody></table></div>
+<p>SDK 会把失败转换为 <code>ActionError</code>，保留 <code>retcode</code> 和标准响应。MCP 仅返回经过简化的错误，不把请求头、令牌或原生凭据暴露给模型。</p></section>
+<section id="extensions"><div class="chapter-label">DYTRANOB DOCUMENTATION / EXTENSIONS</div><h1>抖音扩展与媒体接入</h1>
+<p>本章对照 <a href="https://github.com/Rockedw/douyin-web-api-sdk" target="_blank" rel="noopener noreferrer">Rockedw/douyin-web-api-sdk</a> 的公开 <code>DouyinMessageSDK</code> 方法，记录 TypeScript 实现。现有 25 个动作之外新增 20 个 <code>dy_*</code> 动作，总计 45 个。所有扩展经过同一个 Runtime 分发，可从标准 HTTP、正向 / 反向 WebSocket、WebUI 动作调试、CMD、SDK 和 MCP 调用。</p>
+<h2>功能对照</h2>
+<div class="table-wrap"><table><thead><tr><th>参考 SDK 能力</th><th>DyTranOb 入口</th><th>说明</th></tr></thead><tbody><tr><td>connect / disconnect / close</td><td>SDK <code>connect()</code> / <code>disconnect()</code> / <code>close()</code></td><td>连接桥接 WebSocket；断开后可再次 connect，close 后实例不可复用；原生账号由运行时管理</td></tr><tr><td>isConnected / getConnectionStatus</td><td>SDK 同名方法、<code>get_status</code></td><td>SDK 方法表示客户端连接状态，get_status 表示抖音账号状态</td></tr><tr><td>消息与连接监听器</td><td>SDK <code>event</code> / <code>connected</code> / <code>disconnected</code> / <code>transport_error</code> 事件</td><td>原生会话继续由 douyin-im 接收、心跳与重连</td></tr><tr><td>sendMessage</td><td><code>dy_send_conversation_msg</code>；标准 <code>send_private_msg</code> / <code>send_group_msg</code></td><td>新入口接受原生会话 ID，标准入口接受本地 OneBot 别名</td></tr><tr><td>sendImageMessage</td><td><code>dy_send_image</code> 的 <code>image</code> 参数</td><td>发送已上传图片，包含 oid、skey、md5、尺寸等</td></tr><tr><td>uploadAndSendImageMessage，文件与字节重载</td><td><code>dy_send_image</code> 的 <code>image_base64</code>；SDK <code>uploadAndSendImageMessage</code> / <code>uploadAndSendImageFile</code></td><td>本地文件由 SDK 客户端读取，不允许远程动作读取服务端任意路径</td></tr><tr><td>独立图片上传</td><td><code>dy_upload_image</code></td><td>返回可传给 dy_send_image 的图片资源</td></tr><tr><td>sendDynamicEmojiMessage</td><td><code>dy_send_dynamic_emoji</code> / <code>dy_list_dynamic_emojis</code></td><td>内置 22 条资源元数据；按名称发送，活动表情受时间窗限制，URL 可覆盖</td></tr><tr><td>sendVideoCardMessage</td><td><code>dy_send_video_card</code></td><td>分享作品 ID，使用 douyin-im 卡片构造；不是视频文件上传</td></tr><tr><td>createConversation</td><td><code>dy_create_conversation</code></td><td>按原生数字 UID 创建私信会话</td></tr><tr><td>sendMsg2Stranger</td><td><code>dy_send_stranger_msg</code></td><td>sec_user_id → UID → 创建会话 → 发送文字</td></tr><tr><td>fetchStrangerMessages</td><td><code>dy_fetch_stranger_messages</code></td><td>陌生人会话分页；也可按会话短 ID 获取消息，不清除未读</td></tr><tr><td>getUserInfo</td><td><code>dy_get_user_info</code></td><td>返回网页资料接口数据</td></tr><tr><td>getUserPosts</td><td><code>dy_get_user_posts</code></td><td>原生游标分页，保留 has_more、max_cursor、aweme_list</td></tr><tr><td>getUserPostsWithCount</td><td><code>dy_get_user_posts_count</code></td><td>按数量聚合，去重、限制最多 1000 条和 50 次分页，重复游标停止</td></tr><tr><td>getUserPostsByPage</td><td><code>dy_get_user_posts_page</code></td><td>顺序遍历游标到指定页，最多 50 页；不是随机访问</td></tr><tr><td>commentVideo</td><td><code>dy_comment_video</code></td><td>发布文字评论，必须取得 comment.cid 才返回成功</td></tr><tr><td>commentVideoWithImage</td><td><code>dy_comment_video_image</code></td><td>使用已上传评论图片 URI、实际尺寸发布</td></tr><tr><td>uploadImageAndCommentVideo，文件与字节重载</td><td><code>dy_upload_image_and_comment</code>；SDK <code>uploadImageAndCommentVideo</code> / <code>uploadImageFileAndCommentVideo</code></td><td>授权 → ImageX 申请 → CRC 校验上传 → 提交 → 发布评论</td></tr><tr><td>独立评论图片上传</td><td><code>dy_upload_comment_image</code></td><td>返回 uri、width、height、format；与私信加密图片资源不可混用</td></tr><tr><td>getVideoCommentList</td><td><code>dy_get_video_comments</code></td><td>cursor / count 分页读取作品评论</td></tr><tr><td>作品详情</td><td><code>dy_get_video_detail</code></td><td>aweme_id 字符串，原始详情、字幕轨道、来源与诊断</td></tr><tr><td>原生字幕</td><td><code>dy_get_video_subtitles</code></td><td>直接返回 text、秒制 cues、available 与 reason；无字幕元数据和下载失败分别处理</td></tr></tbody></table></div>
+<p>完整的参数、返回结构、AstrBot Python 调用和 MCP 接入见 <a href="#astrbot">AstrBot 接口手册</a>。字幕来源兼容 video.cla_info.caption_info / caption_infos 与 video.subtitle_infos。查询作品不再仅依赖网页接口，可使用已有私信会话和公开移动接口；私信接口可能省略字幕元数据，字幕查询会继续检查其他来源。</p>
+<p>接口代码和隔离测试已经实现。真实抖音网络、登录态、平台校验和账号权限仍决定执行结果；本次验证没有向真实用户发送消息，也没有发布真实评论。特别是网页作品 / 评论接口，应视为需要真实账号联调的扩展能力，不将测试夹具通过描述成平台实测成功。Mock 账号不模拟这些平台操作成功。</p>
+<h2>参数与 ID</h2>
+<p>完整 JSON Schema 由 <code>GET /api/actions</code> 提供，WebUI 的动作调试同步展示。新增动作严格校验参数；不接受未知字段。</p>
+<p>原生 <code>native_user_id</code>、<code>conversation_short_id</code>、<code>item_id</code>、<code>aweme_id</code> 和游标都用字符串，避免 64 位 ID 精度丢失。<code>sec_user_id</code> 是用户主页的加密 ID，不等同于数字 UID。原生扩展返回的数据保留平台字段；不要把原生字符串 ID 直接传给要求 OneBot 整数的旧动作。</p>
+<p>四个会话发送动作（文本、图片、动态表情、作品卡片）必须选择一种目标：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{ &quot;native_user_id&quot;: &quot;1234567890123456789&quot; }</code></pre></div>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;conversation_id&quot;: &quot;0:1:1234567890123456789:987654321098765432&quot;,
+  &quot;conversation_short_id&quot;: &quot;7123456789012345678&quot;,
+  &quot;is_group&quot;: false
+}</code></pre></div>
+<p>前者会创建私信会话；后者可直接使用已知会话，群聊设置 <code>is_group: true</code>。不要同时填写两种目标。发送成功返回本地 <code>message_id</code>、原生 <code>native_message_id</code> 及会话 ID，并产生 <code>message_sent</code> 事件，可使用 <code>delete_msg</code> 在本次运行期间尝试撤回。</p>
+<p><code>dy_send_image</code> 只能填写 <code>image_base64</code> 或 <code>image</code> 之一。Base64 支持纯内容或 <code>base64://</code> 前缀，解码后最大 16 MiB。普通 OneBot image 消息段也支持 <code>file: &quot;base64://...&quot;</code>，建议用消息段数组；CQ 字符串仍有 100000 字符上限。HTTP / WS 总请求上限为 24 MiB，图文混合与多图会拆成多条原生消息，仍不接受服务端文件路径。</p>
+<p>作品与评论的 <code>count</code> 范围 1–100，默认 20；作品 <code>max_cursor</code>、评论 <code>cursor</code> 初始为 <code>&quot;0&quot;</code>。聚合响应含 <code>complete</code>：平台无更多数据或数量已满足时为 true；达到分页上限、游标不推进时可能为 false。不能把 complete:false 当作已抓取全部作品。</p>
+<p>陌生人接口 <code>count</code> 限制每次返回的会话数，指定 <code>conversation_short_id</code> 时限制消息数。首次 <code>cursor: &quot;0&quot;</code>，以后将返回的 <code>next_cursor</code> 原样传回；它可能包含冒号表示平台批次中的位置。停止条件是 <code>has_more: false</code>。列表在两次请求间可能变化，业务端可按会话或消息 ID 去重。</p>
+<h2>调用示例</h2>
+<p>WebUI 登录后进入「动作调试」，选择 <code>dy_get_user_posts</code>，填入实际 sec_user_id 和账号。动态表情先调用 <code>dy_list_dynamic_emojis</code>，再选择 <code>available: true</code> 的名称。预填的中文占位符必须替换为真实值。</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;action&quot;: &quot;dy_send_dynamic_emoji&quot;,
+  &quot;account_id&quot;: &quot;001&quot;,
+  &quot;params&quot;: { &quot;native_user_id&quot;: &quot;1234567890123456789&quot;, &quot;name&quot;: &quot;比心&quot; },
+  &quot;echo&quot;: &quot;emoji-1&quot;
+}</code></pre></div>
+<p>动态表情资源是平台 URL，可能过期。此时可在动作参数提供新 <code>url</code>，并按需要提供 <code>width</code>、<code>height</code>、<code>image_type</code>。不尝试把不可用的资源 ID 拼成下载地址。</p>
+<div class="codeblock"><span class="language">typescript</span><pre><code>import { createClient } from 'dytranob/sdk';
+const client = createClient({ baseUrl: 'http://127.0.0.1:5088', token: process.env.DYTRANOB_TOKEN });
+const account = { account_id: '001' };
+const posts = await client.getUserPosts('实际 sec_user_id', '0', 20, account);
+const comments = await client.getVideoCommentList('实际作品数字ID', '0', 20, account);
+// 下列调用会对真实账号执行发送 / 发布：
+await client.uploadAndSendImageFile({ native_user_id: '实际数字UID' }, 'D:/pictures/demo.png', account);
+await client.uploadImageFileAndCommentVideo('实际作品数字ID', '评论内容', 'D:/pictures/demo.png', account);
+client.close();</code></pre></div>
+<p>SDK 的常用方法与上面对照表同名，始终可以用 <code>client.call(action, params, {account_id})</code> 或 <code>client.callWs(...)</code> 调用完整参数。SDK 使用管理 Token 调用 <code>/api/action</code>；AstrBot 的标准 OneBot 连接使用自己的 Token。</p>
+<p>CMD 可把参数保存成 UTF-8 JSON 文件，再执行：</p>
+<div class="codeblock"><span class="language">bat</span><pre><code>set DYTRANOB_TOKEN=你的固定WebUI令牌
+dytranob.cmd call dy_get_user_posts --account 001 --params-file posts.json</code></pre></div>
+<p><code>posts.json</code> 例子：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{ &quot;sec_user_id&quot;: &quot;实际 sec_user_id&quot;, &quot;max_cursor&quot;: &quot;0&quot;, &quot;count&quot;: 20 }</code></pre></div>
+<p>MCP 的 <code>douyin_query</code> 开放资料、作品、评论列表、表情列表和陌生人查询。<code>douyin_write</code> 需要 <code>--allow-write</code>，才可发送、上传、创建会话和发布评论。请求超时不代表平台没有执行写入；确认结果后再决定是否重试，运行时不自动重复发布评论。</p>
+<h2>AstrBot 图片与表情</h2>
+<h3>smart_imagechat_hub 插件发送图片</h3>
+<p>该插件使用 <code>Image.fromFileSystem</code> 构造图片，本机 AstrBot 的 aiocqhttp 适配器会读取图片并转换为 OneBot <code>image.data.file = &quot;base64://...&quot;</code>。开启自定义回复或追加表情时，可能把文字与图片放在同一条消息链中。DyTranOb 已支持这类消息链，无需更改插件或开放服务端文件读取。</p>
+<p><code>send_private_msg</code> / <code>send_group_msg</code> / <code>send_msg</code> 遇到图文或多图时，按原顺序拆成连续文本与单张图片，最多 20 条。发送前校验所有分段；同一会话的这些标准发送动作依次执行，避免两条回复的分段交错。图片带引用且前面没有文字时，先发送引用原消息的 <code>[图片]</code> 文本，再发图片。</p>
+<p>成功的 <code>message_id</code> 对应最后一条真实消息；拆分时额外返回 <code>message_ids</code>，包含全部真实消息 ID。每条都会产生 <code>message_sent</code> 事件，可分别查询与撤回。若平台在中途拒绝，返回失败，<code>message</code> / <code>wording</code> 的 <code>message_ids=...</code> 列出已发出的部分；剩余分段停止，不会自动重发整条消息链。整条重试可能重复已发送的文字或图片。</p>
+<h3>私信分享的视频与图文卡片</h3>
+<p>分享作品（原生消息类型 8 / 77）现在转换为 AstrBot 能读取的普通文本：</p>
+<div class="codeblock"><span class="language">text</span><pre><code>[抖音视频分享]
+标题：作品标题
+作品ID：7523456789012345678
+https://www.douyin.com/video/7523456789012345678</code></pre></div>
+<p>OneBot 事件及 <code>get_msg</code> 同时保留 <code>dy.work</code>：<code>item_id</code>、<code>kind</code>（video / images）、<code>url</code>、<code>title</code>，以及消息里实际存在的 <code>author_uid</code> / <code>author_sec_uid</code>。长 ID 保持字符串，裸 JSON 数字也先保留精度。图文作品链接使用 <code>/note/&lt;ID&gt;</code>；普通链接卡片也保留原始可用的 HTTP(S) 地址。作品页面链接不是视频文件直链，桥接不会把它伪装成可播放的视频文件。</p>
+<p>修改仅影响新收到的消息，旧缓存中的“不支持”占位不会自动补回作品 ID。重启 DyTranOb 后请重新分享一条视频卡片，并让图片插件再次回复，以检查实际平台执行结果。</p>
+<h3>接收图片的解密与缓存</h3>
+<p>普通私信图片可能是 AES-256-GCM 容器，不能直接交给 AstrBot 图片下载器。现在接收链路会尝试原图与缩略图地址，使用消息里的 skey 解密并验证 PNG / JPEG / GIF / WebP 文件头，再生成标准 OneBot image 段。表情优先取 URL 列表，避开 SDK 1.1.0 把不透明 uri 当成网址的问题；GIF 字节不转码。</p>
+<p>图片放在进程内缓存中，默认总上限 128 MiB、单张 16 MiB、有效期 1 小时；达到容量上限时按先后顺序淘汰。地址形如 <code>http://127.0.0.1:5088/media/&lt;随机标识&gt;.png</code>。持有地址即可读取该张图片，不需要也不包含 WebUI Token。接口只读取缓存，不接受任意 URL 下载或文件路径。重启、过期、淘汰后返回 404；历史事件仍可存在，但旧图片链接不保证可用。</p>
+<p>如果 AstrBot 在 Docker、另一台电脑或远程服务器上，请在主配置中增加 AstrBot 能访问的地址：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;server&quot;: {
+    &quot;host&quot;: &quot;0.0.0.0&quot;,
+    &quot;port&quot;: 5088,
+    &quot;allowRemote&quot;: true,
+    &quot;token&quot;: &quot;你的固定WebUI令牌&quot;,
+    &quot;onebotToken&quot;: &quot;你的OneBot令牌&quot;,
+    &quot;mediaPublicUrl&quot;: &quot;http://192.168.1.100:5088&quot;
+  }
+}</code></pre></div>
+<p>将 IP 替换为运行 DyTranOb 的电脑地址，并配置网络可达性。使用反向代理时也可以设置 HTTPS 基础地址。<code>mediaPublicUrl</code> 仅影响事件里的图片地址，不会自动开端口或改防火墙。</p>
+<p>重启运行时后重新发送一张图片或表情测试。旧缓存事件没有保存解密密钥，不会自动补修历史链接。下载或解密失败时上报明确的文字占位并记录消息 ID，避免向 AstrBot 发送无法解码的加密内容。HEIC、缺少资源 / 密钥、过期 CDN 地址仍可能失败；图片下载最多尝试 4 个地址，每次最多 15 秒，消息按账号排队，最多积压 128 条。</p>
+<h2>网页接口的登录态</h2>
+<p>默认复用当前账号的 douyin-im 登录会话、设备参数和可用的 ticket guard 绑定。网页接口会生成 a_bogus，图文上传采用 ImageX V4 签名；仅访问固定平台端点。返回校验失败、缺少 comment.cid 或上传未确认时，都不会返回伪造成功。</p>
+<p>如果同一个账号的网页接口要求单独的浏览器参数，可在 <code>dataDir/accounts/&lt;账号ID&gt;/web-session.json</code> 手动补充以下可选字段。文件每次执行扩展动作时读取，不需要重启：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;cookies&quot;: &quot;同一账号的有效网页 Cookie&quot;,
+  &quot;userAgent&quot;: &quot;获取这些 Cookie 时的浏览器 User-Agent&quot;,
+  &quot;msToken&quot;: &quot;同一网页会话的 msToken&quot;,
+  &quot;webId&quot;: &quot;网页数字 webid&quot;,
+  &quot;uifid&quot;: &quot;网页 uifid&quot;,
+  &quot;fp&quot;: &quot;网页 verifyFp&quot;,
+  &quot;sessionTrait&quot;: &quot;网页 x-tt-session-dtrait&quot;
+}</code></pre></div>
+<p>此文件不是 WebUI Token 配置，也不会修改主 IM 登录。字段可以省略；不要把示例占位内容当作真实凭据。文件不经 WebUI/API 返回，必须保护其中凭据。补充 Cookie 不保证通过平台验证：会话、签名绑定、网络环境和账号权限可能需要同时匹配。无需将凭据发给开发者，诊断时只提供动作名、返回码和已脱敏日志。</p>
+<p>也支持使用浏览器中的原始名称 <code>UIFID</code>、<code>ttwid</code>、<code>s_v_web_id</code>。<code>UIFID</code> 等价于 <code>uifid</code>，<code>s_v_web_id</code> 等价于 <code>fp</code>；同一项同时写两种名称时值必须相同。单独填写的值会覆盖 Cookie 中的旧值：UIFID 同时用于 Cookie、请求头和 query，s_v_web_id 同时用于 Cookie 与 fp/verifyFp，ttwid 放入 Cookie。不要把 ttwid 填成数字 webId。</p>
+<p>推荐在本地登录抖音网页，按 F12 打开开发者工具，在 Network 中刷新并查找 <code>aweme/detail</code> 请求；将同一次请求的 Cookie 和 User-Agent 填入文件。Application → Cookies → 抖音域名也可查看 UIFID、ttwid、s_v_web_id；若看不到对应 Cookie，可检查该成功请求的 uifid 请求头和 fp/verifyFp 参数，不能随机编造。完整网页 Cookie 会替换网页请求原来使用的 IM Cookie，避免混合不同会话。</p>
+<p>账号 001 在默认 dataDir 下的配置位置是 <code>E:/DyTranOb/data/accounts/001/web-session.json</code>。先保留原文件内容，再补充或更新真实浏览器值，不要把示例值覆盖进去。无需把这些值发送到聊天、AstrBot 大模型或字幕动作参数。</p>
+<h2>实现位置与验证</h2>
+<p><code>src/extensions.ts</code> 是参数 Schema、动作目录及 MCP 权限的统一来源；<code>src/adapters/douyin-extensions.ts</code> 负责 IM 组合流程；<code>src/adapters/douyin-web.ts</code> 负责网页请求、分页、签名与评论上传；<code>src/media.ts</code> 负责接收图片缓存和解密。没有新增插件系统。</p>
+<p>测试覆盖加密图片私信事件、URL / URI 选择、缓存过期、错误密钥、跨域重定向限制、原生长 ID、分页去重与停止条件、陌生人分页、签名验证、评论上传步骤、发送拒绝、HTTP/WS 大图片和 MCP 写权限。执行 <code>npm run check</code> 进行类型检查、自动测试和构建；上线后仍需用自己的账号验证平台实际返回。</p></section>
+<section id="astrbot"><div class="chapter-label">DYTRANOB DOCUMENTATION / ASTRBOT</div><h1>DyTranOb：AstrBot 与机器人接口使用手册</h1>
+<p>适用版本：DyTranOb 0.1.0，包含作品详情、原生字幕动作的构建（45 个动作入口）。本文可直接交给机器人读取。接口存在不表示账号具有对应平台权限；参数以当前运行实例的 Schema 为准。</p>
+<h2>1. 机器人首先读取什么</h2>
+<ul><li>本手册：<code>GET /docs/astrbot.md</code>，默认主服务地址 <code>http://127.0.0.1:5088/docs/astrbot.md</code>。</li><li>构建时生成的全部动作 JSON Schema：<code>GET /docs/actions.json</code>，响应为 <code>{ &quot;version&quot;: 1, &quot;actions&quot;: [...] }</code>。两个文档地址均为公开静态说明，不包含账号或凭据。</li><li>当前实例能力：OneBot 动作 <code>dy_get_capabilities</code>，检查 <code>data.actions</code> 中是否存在准备调用的动作。</li><li>当前实例参数：管理接口 <code>GET /api/actions</code>，需要 WebUI Token；MCP 客户端也可用 <code>douyin_actions</code> 读取。</li><li>账号状态：<code>dy_list_accounts</code> 和 <code>get_status</code>。需要查询作品的抖音账号必须在线；mock 账号不执行真实平台查询。</li></ul>
+<p>文档不会自动成为大模型工具。AstrBot 收到 OneBot 消息后，需要由现有插件中的工具函数调用动作，或配置下面的 MCP，让模型获得 <code>douyin_query</code>。仅把文档放进知识库，不会自动执行 HTTP 请求。</p>
+<h2>2. 连接、鉴权与账号选择</h2>
+<div class="table-wrap"><table><thead><tr><th>入口</th><th>调用方式</th><th>使用的 Token</th></tr></thead><tbody><tr><td>AstrBot 反向 WebSocket</td><td>DyTranOb 主动连到 AstrBot 的 OneBot v11 地址；AstrBot 在同一条连接调用动作</td><td>WebUI「连接配置」中该连接的 Token，与 AstrBot 的反向 WS Token 相同；可同时为空</td></tr><tr><td>标准 HTTP</td><td><code>POST /action</code>，JSON 中包含 action 和 params；或 <code>POST /动作名</code>，JSON 为参数</td><td>主服务的 <code>server.onebotToken</code> 或独立 HTTP 连接的 Token</td></tr><tr><td>正向 WebSocket</td><td>连接配置指定的地址，通常 <code>/ws</code></td><td>该 OneBot 连接 Token</td></tr><tr><td>WebUI / 管理 HTTP</td><td><code>POST /api/action</code>、<code>GET /api/actions</code></td><td>固定的 WebUI Token</td></tr><tr><td>SDK 默认 call / MCP</td><td>通过 <code>/api/action</code> 调用主服务</td><td>WebUI Token，MCP 通过环境变量 <code>DYTRANOB_TOKEN</code> 提供</td></tr></tbody></table></div>
+<p>非空 Token 使用 <code>Authorization: Bearer YOUR_TOKEN</code>。不要把 WebUI Token、Cookie 或字幕签名 URL写进公开日志。AstrBot 的 OneBot Token 与 WebUI Token 是两套独立配置，不要混用。独立连接端口并不提供管理接口和文档页面。</p>
+<p>以下例子的 <code>127.0.0.1</code> 表示调用程序所在机器。AstrBot 在容器或另一台机器时，应换成它能访问的 DyTranOb 主机地址。文档中的 <code>001</code>、作品 ID、用户 ID、会话短 ID 都是示例，按实际账号替换。</p>
+<p>普通 HTTP / 正向 WS：多账号时在请求最外层填写 <code>account_id</code>（配置中的字符串 ID）或 <code>self_id</code>（OneBot 整数别名），不要放进 params。反向 WS 的连接已按账号绑定，AstrBot 的 <code>event.bot.call_action(...)</code> 无需额外传账号。不要在这个调用的 kwargs 中塞入 account_id，因为它会进入动作参数。</p>
+<h2>3. 通用请求与响应</h2>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;action&quot;: &quot;dy_get_video_subtitles&quot;,
+  &quot;account_id&quot;: &quot;001&quot;,
+  &quot;params&quot;: { &quot;aweme_id&quot;: &quot;7123456789012345678&quot; },
+  &quot;echo&quot;: &quot;subtitles-1&quot;
+}</code></pre></div>
+<p>HTTP：将上述 JSON POST 到 <code>/action</code>。WS：直接发送上述 JSON 帧，用 echo 匹配返回帧，同时处理异步事件。不要按返回顺序匹配请求。</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;retcode&quot;: 0,
+  &quot;data&quot;: { &quot;available&quot;: false, &quot;reason&quot;: &quot;no_subtitle_metadata&quot;, &quot;text&quot;: &quot;&quot;, &quot;cues&quot;: [] },
+  &quot;echo&quot;: &quot;subtitles-1&quot;
+}</code></pre></div>
+<p>这个响应仅展示主要字段。HTTP 200 不等于动作成功：原始 HTTP/WS 客户端必须同时检查 <code>status == &quot;ok&quot;</code> 和 <code>retcode == 0</code>。失败响应为 <code>status: &quot;failed&quot;</code>、非零 retcode、<code>data: null</code>，并提供 message / wording。aiocqhttp 的 <code>call_action</code> 和 DyTranOb SDK 已解包成功的 data，失败时抛出异常；不要再对返回值取一次 data。</p>
+<p>ID 规则：OneBot 的 user_id、group_id、message_id 使用本地稳定整数别名；抖音的 aweme_id、item_id、native_user_id、conversation_short_id 都必须使用十进制字符串。不要把 19 位作品 ID 转成 JavaScript Number；不要把消息 ID 当成作品 ID。sec_user_id 是主页的加密用户标识，也不等于数字 UID。</p>
+<h2>4. 从视频分享卡片读取字幕</h2>
+<ol><li>接收 <code>post_type: &quot;message&quot;</code> 的分享事件，读取 <code>dy.work.item_id</code>。避免处理自己的 message_sent 造成循环。</li><li>若 AstrBot 适配器未保留 dy 字段，用当前消息的 OneBot message_id 调用 <code>get_msg</code>，读取 <code>data.dy.work</code>。本地最多缓存最近 5000 条消息，重启仍可保留已缓存的内容。</li><li>调用 <code>dy_get_video_subtitles</code>，传入 <code>aweme_id: work.item_id</code>；有 <code>work.conversation_short_id</code> 时一并传入，优先使用原生私信详情接口。</li><li>只有 <code>available: true</code> 才把 text 当作字幕；时间轴在 cues 中，单位为秒。</li><li><code>available: false</code> 时查看 reason 和 warnings，说明当前没有取得字幕数据，不要用标题、作品描述、评论或视频画面文字假装字幕。</li></ol>
+<p>分享事件的关键字段如下，旧版本已缓存的分享可能没有 conversation_short_id，仍可仅传作品 ID。</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;post_type&quot;: &quot;message&quot;,
+  &quot;message_id&quot;: 208,
+  &quot;account_id&quot;: &quot;001&quot;,
+  &quot;dy&quot;: {
+    &quot;work&quot;: {
+      &quot;item_id&quot;: &quot;7123456789012345678&quot;,
+      &quot;kind&quot;: &quot;video&quot;,
+      &quot;url&quot;: &quot;https://www.douyin.com/video/7123456789012345678&quot;,
+      &quot;title&quot;: &quot;作品原始标题&quot;,
+      &quot;conversation_short_id&quot;: &quot;7123456789012345678&quot;
+    }
+  }
+}</code></pre></div>
+<p>只有链接时，从完整 <code>/video/数字ID</code> 或 <code>/note/数字ID</code> 路径提取字符串 ID。当前动作不接收 v.douyin.com 短链接，也不会把任意 URL 当作字幕下载地址。</p>
+<h3>dy_get_video_detail：作品详情</h3>
+<div class="table-wrap"><table><thead><tr><th>参数</th><th>类型</th><th>必填</th><th>说明</th></tr></thead><tbody><tr><td>aweme_id</td><td>string</td><td>是</td><td>1–30 位十进制作品 ID</td></tr><tr><td>conversation_short_id</td><td>string</td><td>否</td><td>原生会话短 ID，来自分享事件或已有会话；不是 OneBot group_id</td></tr></tbody></table></div>
+<p>返回 data：</p>
+<ul><li><code>aweme_detail</code>：平台原始作品对象，包含可能存在的 desc、author、statistics、video、images 等字段，不承诺所有作品都有相同字段。访问字幕原始信息用 <code>aweme_detail.video.cla_info</code>。</li><li><code>subtitle_tracks</code>：归一化字幕列表，每项含 <code>index</code>、<code>language</code>、<code>format</code>、<code>urls</code>。index 从 0 开始，列表为空不证明视频没有画面字幕或人声。</li><li><code>source</code>：本次采用的详情来源，web / im / mobile。</li><li><code>sources_checked</code>：实际检查的来源；<code>warnings</code>：未成功来源的诊断码。</li></ul>
+<p>有会话短 ID 时优先使用 IM 详情，否则先用网页登录态。网页失败会读取已有私信会话上下文，再查询 IM 分享详情。仍无法取得详情时尝试官方移动端公开作品接口。不会为了查询而创建新会话。返回作品必须与请求 ID 精确匹配；过滤、缺失和请求失败不会生成假详情。</p>
+<h3>dy_get_video_subtitles：原生字幕</h3>
+<p>与详情动作相同的两个参数，另有：</p>
+<div class="table-wrap"><table><thead><tr><th>参数</th><th>类型</th><th>默认</th><th>说明</th></tr></thead><tbody><tr><td>language</td><td>string</td><td>自动</td><td>最长 32 字符；精确匹配 language_code，不同地区变体并不自动互换</td></tr><tr><td>track_index</td><td>integer</td><td>自动</td><td>0–31，优先于 language；来自最新详情的 subtitle_tracks</td></tr></tbody></table></div>
+<p>默认优先中文轨道（zh / cmn 前缀），否则选第一个。字幕动作会在详情缺少字幕时继续检查其他详情来源。兼容 <code>video.cla_info.caption_info</code>、<code>caption_infos</code>、camelCase 变体及 <code>video.subtitle_infos</code>；从 url、url_list 等字段取下载地址。支持 VTT、SRT，以及带时间戳的 JSON utterances / cues / body。</p>
+<p>成功取得字幕的示意响应 data（以下字幕为示例，不是上述测试作品的内容）：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;aweme_id&quot;: &quot;7123456789012345678&quot;,
+  &quot;source&quot;: &quot;web&quot;,
+  &quot;sources_checked&quot;: [&quot;web&quot;],
+  &quot;warnings&quot;: [],
+  &quot;available&quot;: true,
+  &quot;reason&quot;: null,
+  &quot;track_index&quot;: 0,
+  &quot;language&quot;: &quot;zh-Hans&quot;,
+  &quot;tracks&quot;: [{ &quot;index&quot;: 0, &quot;language&quot;: &quot;zh-Hans&quot;, &quot;format&quot;: &quot;webvtt&quot;, &quot;urls&quot;: [&quot;https://sf1.douyinstatic.com/example.vtt&quot;] }],
+  &quot;text&quot;: &quot;第一句字幕\n第二句字幕&quot;,
+  &quot;cues&quot;: [
+    { &quot;start&quot;: 0.64, &quot;end&quot;: 2.12, &quot;text&quot;: &quot;第一句字幕&quot; },
+    { &quot;start&quot;: 2.2, &quot;end&quot;: 4.5, &quot;text&quot;: &quot;第二句字幕&quot; }
+  ]
+}</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>状态</th><th>含义</th><th>调用端处理</th></tr></thead><tbody><tr><td>available=true</td><td>已下载并解析出有效时间轴文本</td><td>使用 text 或 cues</td></tr><tr><td>reason=no_subtitle_metadata</td><td>已取得作品详情，但检查的接口没有给出可下载字幕轨道</td><td>提示未取得原生字幕；不推断视频完全无字幕</td></tr><tr><td>reason=language_unavailable</td><td>指定语言不存在</td><td>从 tracks 选语言，或去掉 language</td></tr><tr><td>SUBTITLE_TRACK_NOT_FOUND</td><td>index 超出当前轨道范围</td><td>刷新详情后重新选择</td></tr><tr><td>SUBTITLE_DOWNLOAD_FAILED</td><td>有地址，但网络、过期地址、未支持域名或格式导致下载解析失败</td><td>重新查询一次获取新地址；仍失败则报告错误</td></tr><tr><td>WORK_DETAIL_FAILED</td><td>所有详情来源都失败</td><td>检查登录状态、会话短 ID、网页会话和网络</td></tr><tr><td>WORK_UNAVAILABLE</td><td>平台明确过滤作品</td><td>不继续重试或声称已获取内容</td></tr></tbody></table></div>
+<p><code>warnings</code> 可能包含 WEB_DETAIL_UIFID_REQUIRED、WEB_DETAIL_UNAVAILABLE、IM_DETAIL_UNAVAILABLE、MOBILE_DETAIL_UNAVAILABLE。WEB_DETAIL_UIFID_REQUIRED 表示网页端要求的 UIFID 缺失。私信已登录与完整网页登录态是两个条件；现有 <code>web-session.json</code> 配置方法见 <a href="#extensions">扩展文档</a>。同一浏览器的 Cookie、UA、UIFID、fp 需要匹配，不要随机填值。</p>
+<p>机器人不需要持有这些凭据。由用户在 DyTranOb 本机的 <code>data/accounts/&lt;账号ID&gt;/web-session.json</code> 填写同一次浏览器会话的完整 cookies 和 userAgent，或补充原始字段 UIFID、ttwid、s_v_web_id（旧名 uifid/fp 仍兼容）。DyTranOb 会将这些值用于网页请求；机器人继续仅传 aweme_id 和可选 conversation_short_id。字段名是 <code>cla_info</code>，不是 <code>cal_info</code>。补齐浏览器标识后仍可能要求有效的网页签名，不能承诺补三个值就一定取得字幕。</p>
+<p>每个字幕文件上限 2 MiB，最多 20000 个 cue、500000 字符文本；超限明确失败，不静默返回残缺文本。字幕下载总预算 30 秒，校验每次重定向的官方 CDN 域名，不携带账号 Cookie。字幕地址可能过期，应存储成功返回的文本，不把签名 URL 当永久地址。建议外部调用超时设为 130–180 秒；SDK 的详情/字幕默认超时分别为 90/125 秒。</p>
+<p>本功能获取平台已有字幕，不执行 OCR 或语音转写。画面上压制的字幕、音乐歌词、视频描述不等于可下载字幕轨道；若平台不提供，需由 AstrBot 另行配置视频理解或语音识别工具，不能由此接口凭空生成。</p>
+<h2>5. AstrBot Python 调用示例</h2>
+<p>以下函数供已有 AstrBot 插件/工具调用，不会自动注册成大模型工具。适用 AstrBot 的 aiocqhttp / OneBot v11 事件；反向 WS 已绑定对应账号。</p>
+<div class="codeblock"><span class="language">python</span><pre><code>import asyncio
+from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
+
+async def read_shared_subtitles(event: AiocqhttpMessageEvent) -&gt; dict:
+    # call_action 返回解包后的 data，失败时抛出异常。
+    cached = await event.bot.call_action(
+        &quot;get_msg&quot;, message_id=int(event.message_obj.message_id)
+    )
+    work = (cached.get(&quot;dy&quot;) or {}).get(&quot;work&quot;) or {}
+    aweme_id = work.get(&quot;item_id&quot;)
+    if not isinstance(aweme_id, str) or not aweme_id.isdecimal():
+        return {&quot;available&quot;: False, &quot;reason&quot;: &quot;message_has_no_work_id&quot;}
+    params = {&quot;aweme_id&quot;: aweme_id}
+    if work.get(&quot;conversation_short_id&quot;):
+        params[&quot;conversation_short_id&quot;] = work[&quot;conversation_short_id&quot;]
+    result = await asyncio.wait_for(
+        event.bot.call_action(&quot;dy_get_video_subtitles&quot;, **params), timeout=150
+    )
+    return result  # 给模型 text/cues/available/reason/warnings，按状态决定回答。</code></pre></div>
+<p>若已有作品 ID，可直接调用 <code>await event.bot.call_action(&quot;dy_get_video_subtitles&quot;, aweme_id=&quot;7123456789012345678&quot;)</code>。查询错误应交给调用工具的异常处理返回，不要写成空字符串并当作成功。AstrBot 自身的 OneBot API 超时也应大于查询预算；只增加 asyncio.wait_for 不会延长内部更短的超时。</p>
+<h2>6. HTTP、SDK、MCP 示例</h2>
+<p>标准 HTTP（只读，Token 改为该 OneBot HTTP 连接的值）：</p>
+<div class="codeblock"><span class="language">python</span><pre><code>import httpx
+
+async def subtitles_over_http(base_url: str, token: str, aweme_id: str):
+    headers = {&quot;Authorization&quot;: f&quot;Bearer {token}&quot;} if token else {}
+    async with httpx.AsyncClient(timeout=150) as client:
+        response = await client.post(
+            f&quot;{base_url.rstrip('/')}/action&quot;, headers=headers,
+            json={&quot;action&quot;: &quot;dy_get_video_subtitles&quot;, &quot;account_id&quot;: &quot;001&quot;,
+                  &quot;params&quot;: {&quot;aweme_id&quot;: aweme_id}},
+        )
+        response.raise_for_status()
+        envelope = response.json()
+        if envelope.get(&quot;status&quot;) != &quot;ok&quot; or envelope.get(&quot;retcode&quot;) != 0:
+            raise RuntimeError(f&quot;{envelope.get('retcode')}: {envelope.get('message')}&quot;)
+        return envelope[&quot;data&quot;]</code></pre></div>
+<p>TypeScript SDK（主服务管理入口用 WebUI Token）：</p>
+<div class="codeblock"><span class="language">typescript</span><pre><code>import { DyTranObClient } from './dist/sdk.js';
+const client = new DyTranObClient({
+  baseUrl: 'http://127.0.0.1:5088', token: process.env.DYTRANOB_TOKEN,
+});
+try {
+  const detail = await client.getVideoDetail('7123456789012345678', {}, { account_id: '001' });
+  const subtitles = await client.getVideoSubtitles('7123456789012345678', {}, { account_id: '001' });
+  // 保存/处理返回数据，不在公开日志输出包含签名的字幕 URL。
+} finally { client.close(); }</code></pre></div>
+<p>在 AstrBot 的 MCP 配置中添加 stdio 服务（需要 AstrBot 所在主机能启动此路径的 Node 进程）：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;dytranob&quot;: {
+      &quot;command&quot;: &quot;node&quot;,
+      &quot;args&quot;: [&quot;E:/DyTranOb/dist/cli.js&quot;, &quot;mcp&quot;, &quot;--url&quot;, &quot;http://127.0.0.1:5088&quot;],
+      &quot;env&quot;: { &quot;DYTRANOB_TOKEN&quot;: &quot;填写固定的WebUI Token&quot; }
+    }
+  }
+}</code></pre></div>
+<p>模型调用工具 <code>douyin_query</code> 的参数如下，不需要开启 --allow-write：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;action&quot;: &quot;dy_get_video_subtitles&quot;,
+  &quot;account_id&quot;: &quot;001&quot;,
+  &quot;params&quot;: { &quot;aweme_id&quot;: &quot;7123456789012345678&quot; }
+}</code></pre></div>
+<h2>7. 其余动作速查：参数与返回值</h2>
+<p>下表写的是 data，不包括外层 status/retcode/echo。所有参数的精确类型、默认值、长度和可选字段可查 <code>actions.json</code> 或 <code>GET /api/actions</code>。除了特殊注明的默认值，其余动作必填参数见表。原生响应字段可能随抖音变化，读取时应检查字段是否存在。</p>
+<div class="table-wrap"><table><thead><tr><th>动作</th><th>参数</th><th>返回 / 限制</th></tr></thead><tbody><tr><td>get_version_info</td><td>无</td><td>app_name、app_version、protocol_version、impl</td></tr><tr><td>get_status</td><td>无</td><td>online、good；未选择账号时还含 accounts</td></tr><tr><td>dy_list_accounts</td><td>无</td><td>账号数组：id、kind、online，可选 self_id/nickname</td></tr><tr><td>dy_get_capabilities</td><td>无</td><td>actions、segments、limitations；segments 是协议模型，不保证原生支持全部发送</td></tr><tr><td>get_login_info</td><td>无</td><td>user_id、nickname</td></tr><tr><td>get_friend_list</td><td>无</td><td>好友数组，含映射 user_id、nickname 等</td></tr><tr><td>get_stranger_info</td><td>user_id，可选 no_cache</td><td>已知好友信息；不是任意陌生 UID 查询</td></tr><tr><td>get_group_list</td><td>无</td><td>群数组，含 group_id/group_name/member_count</td></tr><tr><td>get_group_info</td><td>group_id，可选 no_cache</td><td>单个群；未知人数可能为 0</td></tr><tr><td>get_group_member_list</td><td>group_id</td><td>成员数组；role/sex/age 等 QQ 字段可能为占位值</td></tr><tr><td>get_group_member_info</td><td>group_id、user_id，可选 no_cache</td><td>单个成员；不得拿占位 role 判断权限</td></tr><tr><td>get_msg</td><td>message_id</td><td>本地缓存的 message、raw_message、sender、dy 等；不是远程历史消息搜索</td></tr><tr><td>dy_resolve_id</td><td>kind、native_id</td><td>返回 id；kind=user/group/message，创建本地 ID 映射</td></tr><tr><td>dy_get_native_id</td><td>kind、id</td><td>返回 native_id；只反查本账号已知映射</td></tr><tr><td>can_send_image</td><td>无</td><td>yes=true；不保证每个图片地址或格式可用</td></tr><tr><td>can_send_record</td><td>无</td><td>yes=false</td></tr><tr><td>send_private_msg</td><td>user_id、message，可选 auto_escape</td><td>message_id；拆分时还有 message_ids</td></tr><tr><td>send_group_msg</td><td>group_id、message，可选 auto_escape</td><td>同上，受原生群权限约束</td></tr><tr><td>send_msg</td><td>message、目标 ID，可选 message_type</td><td>两种 ID 都给时必须选 private/group</td></tr><tr><td>delete_msg</td><td>message_id</td><td>成功 data=null；只可撤回本次运行已知路由且平台允许的消息</td></tr><tr><td>set_group_leave</td><td>group_id，可选 is_dismiss=false</td><td>成功 null；解散群不支持</td></tr><tr><td>set_group_kick</td><td>group_id、user_id，可选 reject_add_request=false</td><td>成功 null；拒绝未来申请不支持</td></tr><tr><td>set_group_add_request</td><td>flag，可选 approve=true、sub_type/type=add</td><td>成功 null；仅本次运行收到的加群申请，不支持邀请审批、拒绝理由</td></tr><tr><td>set_group_name</td><td>group_id、group_name</td><td>当前原生 SDK 不支持，返回失败</td></tr><tr><td>set_friend_add_request</td><td>flag，可选 approve=true、remark</td><td>当前原生 SDK 不支持，返回失败</td></tr></tbody></table></div>
+<p>四个原生会话发送动作共用目标参数：二选一填写 <code>native_user_id</code>，或同时填写 <code>conversation_id</code> + <code>conversation_short_id</code>；后者可加 <code>is_group: true</code>，默认 false。不要混用两种目标。前者会创建/取得私信会话，属于平台写入。以下称为“会话目标”。</p>
+<div class="table-wrap"><table><thead><tr><th>动作</th><th>参数</th><th>返回 / 限制</th></tr></thead><tbody><tr><td>dy_get_user_info</td><td>sec_user_id</td><td>网页用户资料对象；一般从 user 字段读取</td></tr><tr><td>dy_get_user_posts</td><td>sec_user_id，max_cursor=&quot;0&quot;，count=20</td><td>aweme_list、max_cursor、has_more 等</td></tr><tr><td>dy_get_user_posts_count</td><td>sec_user_id、target_count</td><td>聚合 aweme_list、complete、has_more；target_count=1–1000</td></tr><tr><td>dy_get_user_posts_page</td><td>sec_user_id、page，page_size=20</td><td>aweme_list、page/page_size、complete；page=1–50，内部顺序遍历游标</td></tr><tr><td>dy_get_video_comments</td><td>aweme_id，cursor=&quot;0&quot;，count=20</td><td>comments、cursor、has_more 等原始评论响应</td></tr><tr><td>dy_fetch_stranger_messages</td><td>count=20、cursor=&quot;0&quot;，可选 conversation_short_id</td><td>不给短 ID 返回 conversations；给短 ID 返回 messages；均含 next_cursor/has_more，不清除未读</td></tr><tr><td>dy_list_dynamic_emojis</td><td>无</td><td>表情名称和资源元数据数组，选择 available=true 的名称</td></tr><tr><td>dy_create_conversation</td><td>native_user_id</td><td>conversation_id、conversation_short_id、conversation_type、native_user_id</td></tr><tr><td>dy_send_stranger_msg</td><td>sec_user_id、text</td><td>创建会话并发送；返回 message_id、native_message_id、会话 ID</td></tr><tr><td>dy_send_conversation_msg</td><td>会话目标、text</td><td>同上</td></tr><tr><td>dy_upload_image</td><td>image_base64</td><td>oid、skey、md5、dataSize、width、height、可选 format</td></tr><tr><td>dy_send_image</td><td>会话目标；image_base64 或 image 二选一</td><td>发送结果与会话 ID；image 为上一个上传动作返回的完整资源对象</td></tr><tr><td>dy_send_dynamic_emoji</td><td>会话目标、name，可选 url/width/height/image_type</td><td>发送结果与会话 ID；内置资源可能受活动时间限制</td></tr><tr><td>dy_send_video_card</td><td>会话目标、item_id，可选 title</td><td>发送作品卡片；不是上传视频文件</td></tr><tr><td>dy_comment_video</td><td>aweme_id、text</td><td>原始评论发布响应；须存在 comment.cid 才成功</td></tr><tr><td>dy_upload_comment_image</td><td>image_base64</td><td>uri、width、height、format；与私信加密图片资源不同</td></tr><tr><td>dy_comment_video_image</td><td>aweme_id、image_uri、width、height，text=&quot;&quot;、image_format=&quot;jpeg&quot;</td><td>使用已有评论图片发布；返回原始评论响应</td></tr><tr><td>dy_upload_image_and_comment</td><td>aweme_id、image_base64，text=&quot;&quot;</td><td>上传后发布；返回原始评论响应</td></tr></tbody></table></div>
+<p>分页 count/page_size 范围 1–100，默认 20。作品/评论游标为字符串；陌生人 next_cursor 可能含冒号，必须原样回传。has_more=false 时停止；complete=false 时不能声称已经获取全部。结果可按原生 ID 去重，不要无限重试重复游标。</p>
+<p>发送 message 推荐使用 OneBot 数组，例如 <code>[{&quot;type&quot;:&quot;text&quot;,&quot;data&quot;:{&quot;text&quot;:&quot;你好&quot;}}]</code>。图片使用 <code>{&quot;type&quot;:&quot;image&quot;,&quot;data&quot;:{&quot;file&quot;:&quot;base64://图片内容&quot;}}</code> 或可访问的 HTTPS 地址；最大 16 MiB。AstrBot 本地文件应由客户端读成 Base64，不能把 Windows 路径交给 DyTranOb 服务读取。图文和多图会按顺序拆为最多 20 条原生消息；返回 message_id 是最后一条，message_ids 包含所有已成功发送的 ID。部分失败会在 message 中列出已发送 ID，不能重试整条消息以免重复。</p>
+<p>原生文本参数通常为 1–10000 字符。原生视频文件、语音、QQ 专属功能和插件系统不在当前实现范围。reply 引用需要当前运行已观察到的消息路由；图片带引用可能先发送引用占位文字再发送图片。</p>
+<h2>8. 错误处理与机器人调用规则</h2>
+<div class="table-wrap"><table><thead><tr><th>retcode</th><th>常见原因</th><th>建议</th></tr></thead><tbody><tr><td>1400</td><td>参数错误、错误 ID 类型、多账号未选择</td><td>查 Schema 后修正；不要盲目重试</td></tr><tr><td>1401</td><td>Token 不正确或缺失</td><td>检查入口和 Token 类型</td></tr><tr><td>1404</td><td>动作不支持、ID 不存在、平台过滤作品</td><td>查能力和目标；不能声称操作成功</td></tr><tr><td>1500</td><td>原生请求或字幕下载失败、部分发送</td><td>读取 message；只读请求最多有限重试，写动作不要自动重放</td></tr><tr><td>1503</td><td>账号离线</td><td>恢复账号会话后再试</td></tr></tbody></table></div>
+<p>建议给模型的调用约定：先查询能力和账号；从分享事件取精确作品字符串 ID；需要视频内容时用 dy_get_video_subtitles，只有 available=true 才引用字幕文本。遇到 no_subtitle_metadata，明确告知“接口暂未提供可读取的原生字幕”，可建议配置视频理解/语音转写。不要把普通作品描述、评论或字幕文件 URL 当作已读视频内容。只在用户要求时执行发送、评论、撤回和群管理。</p>
+<h2>9. 验证范围与参考</h2>
+<p>只读联调中，网页详情可能因 UIFID 缺失而失败，IM 分享详情与移动端公开详情可返回匹配作品，但可能省略字幕轨道。这不证明视频没有画面字幕。本手册中的作品 ID 与成功字幕 JSON 均为格式示例。</p>
+<p>字幕解析、备用地址、HTTP/WS 分发和失败状态由隔离测试验证。真实平台接口、登录态和作品发布设置仍可能影响结果。参考 <a href="https://github.com/zhinjs/douyin-im" target="_blank" rel="noopener noreferrer">douyin-im</a>、<a href="https://github.com/ucmao/media-parser/blob/main/docs/parsers/douyin.md" target="_blank" rel="noopener noreferrer">media-parser 的抖音接口与字幕说明</a>；本项目不使用第三方解析服务代传账号 Cookie。</p></section>
+<section id="transports"><div class="chapter-label">DYTRANOB DOCUMENTATION / TRANSPORTS</div><h1>传输、SDK 与 MCP</h1>
+<h2>HTTP</h2>
+<p>默认控制台端口的 <code>/api/*</code> 与 SSE 使用 WebUI Token；标准 OneBot HTTP 动作 <code>/action</code>、<code>/&lt;action&gt;</code>、<code>POST /</code> 和 WS 使用 <code>server.onebotToken</code>，留空时不鉴权。连接管理创建的独立端口与出站连接仅使用各自的 <code>token</code>，留空不鉴权。设置 Token 后使用 <code>Authorization: Bearer &lt;token&gt;</code>。WebUI 静态资源、公开开发文档与最小 <code>/health</code> 检查不需要凭据。优先使用请求头，避免令牌进入浏览器历史或代理日志。</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>curl http://127.0.0.1:5088/api/action \
+  -H &quot;Authorization: Bearer YOUR_TOKEN&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;action&quot;:&quot;get_status&quot;,&quot;params&quot;:{},&quot;echo&quot;:&quot;example&quot;}'</code></pre></div>
+<div class="table-wrap"><table><thead><tr><th>入口</th><th>说明</th></tr></thead><tbody><tr><td><code>POST /api/auth</code></td><td>验证 Bearer Token；成功时 <code>data: {authenticated:true}</code>，失败为 HTTP 401</td></tr><tr><td><code>POST /api/action</code></td><td>WebUI / SDK / MCP 管理动作调试；默认端口使用 WebUI Token</td></tr><tr><td><code>POST /action</code> 或 <code>POST /</code></td><td>OneBot 标准动作对象 <code>{action, params, account_id?, self_id?, echo?}</code>；默认端口使用 <code>server.onebotToken</code></td></tr><tr><td><code>GET /&lt;action&gt;</code> 或 <code>POST /&lt;action&gt;</code></td><td>OneBot 简写调用；参数平铺，账号选择器与 echo 保留</td></tr><tr><td><code>GET /api/status</code></td><td><code>data: {accounts,version,uptime}</code>；uptime 为秒</td></tr><tr><td><code>GET /api/actions</code></td><td><code>data: [{action,description,params}]</code>，params 为 JSON Schema</td></tr><tr><td><code>GET /api/events?limit=100</code></td><td>本次运行最近事件，较早到较晚排列；最多实际保留 200 条</td></tr><tr><td><code>POST /api/accounts/:id/login/qr</code></td><td>启动或继续账号原生二维码登录</td></tr><tr><td><code>GET /api/accounts/:id/login</code></td><td>登录状态、二维码与待验证信息</td></tr><tr><td><code>GET /events</code></td><td><code>text/event-stream</code> 的实时事件流</td></tr><tr><td><code>GET /health</code></td><td>仅检查 HTTP 服务存活，不代表账号在线</td></tr></tbody></table></div>
+<p><code>/api/*</code> 查询与登录接口均返回 <code>{status,retcode,data}</code> 包装，不能直接把 HTTP JSON 当成 <code>data</code> 使用。HTTP 请求体与 WS 消息最大为 24 MiB（支持 Base64 图片）。</p>
+<p>登录状态的 <code>data</code> 包含 <code>state</code>、<code>online</code>，以及可选 <code>account</code>、<code>qrcodeBase64</code>、<code>qrcodeUrl</code>、<code>expireTime</code>、<code>qrStatus</code>、<code>error</code>、<code>verification</code>。<code>verification.url</code> 是需要手动打开的本机验证页面，按敏感数据处理。</p>
+<h2>连接管理 API</h2>
+<p>以下接口位于控制台端口，均要求控制台 Bearer Token，响应使用相同的 <code>{status,retcode,data}</code> 包装。新增的传输端口不开放管理接口。</p>
+<div class="table-wrap"><table><thead><tr><th>入口</th><th>成功响应</th></tr></thead><tbody><tr><td><code>GET /api/connections</code></td><td>HTTP 200；<code>data: {revision,connections}</code></td></tr><tr><td><code>POST /api/connections</code></td><td>HTTP 201；<code>data</code> 为创建后的连接视图</td></tr><tr><td><code>PUT /api/connections/:id</code></td><td>HTTP 200；部分更新，<code>data</code> 为更新后的连接视图</td></tr><tr><td><code>DELETE /api/connections/:id</code></td><td>HTTP 200；<code>data: null</code>，关闭连接并删除持久化配置</td></tr></tbody></table></div>
+<p>创建请求示例：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;name&quot;: &quot;本地机器人&quot;,
+  &quot;type&quot;: &quot;ws&quot;,
+  &quot;enabled&quot;: true,
+  &quot;host&quot;: &quot;127.0.0.1&quot;,
+  &quot;port&quot;: 3001,
+  &quot;heartbeatInterval&quot;: 15000
+}</code></pre></div>
+<p><code>type</code> 支持 <code>http</code>、<code>ws</code>、<code>http_post</code>、<code>ws_reverse</code>；出站类型使用 <code>url</code>。可选 <code>token</code> 配置连接专用凭据；编辑省略该字段时保留，空字符串则关闭连接鉴权；创建时省略也不鉴权，不继承 WebUI Token。返回的视图不含 <code>token</code>，包含 <code>tokenConfigured</code>、<code>status</code>，以及适用时的 <code>actualPort</code> 和 <code>error</code>。状态为 <code>running</code>、<code>stopped</code>、<code>connecting</code>、<code>connected</code> 或 <code>error</code>；HTTP 上报的 <code>running</code> 表示上报通道已启用，不保证目标服务可达。</p>
+<p>保存会立即应用并写入 <code>dataDir/connections.json</code>。校验失败返回 <code>1400</code>，未知 ID 返回 <code>1404</code>，重复 ID、端口占用或无法启动连接返回 <code>1409</code>；持久化失败返回 <code>1500</code>，变更不作为成功接受。完整字段、默认值与首次配置迁移规则见 <a href="#configuration">配置与运行</a>。</p>
+<h2>正向 WebSocket</h2>
+<p>通用入口：<code>ws://127.0.0.1:5088/ws</code>，发送标准动作 JSON，接收带 echo 的响应与实时事件。纯动作入口为 <code>/ws/api</code>，纯事件入口为 <code>/ws/event</code>；兼容别名为 <code>/api</code>、<code>/event</code> 与通用 <code>/</code>。</p>
+<p>通过连接管理创建的 <code>ws</code> 服务端使用自己的监听端口，提供同样的 WS 路径。<code>http</code> 服务端只接收动作，支持 <code>POST /action</code>、<code>POST /api/action</code>、<code>POST /</code> 与 <code>GET /&lt;action&gt;</code> / <code>POST /&lt;action&gt;</code>，不提供 WS、SSE 或管理接口。</p>
+<div class="codeblock"><span class="language">ts</span><pre><code>import WebSocket from 'ws';
+
+const ws = new WebSocket('ws://127.0.0.1:5088/ws', {
+  headers: { Authorization: `Bearer ${process.env.DYTRANOB_ONEBOT_TOKEN}` },
+});
+ws.on('open', () =&gt; ws.send(JSON.stringify({
+  action: 'get_status', params: {}, echo: 'ws-1',
+})));
+ws.on('message', data =&gt; console.log(JSON.parse(data.toString())));</code></pre></div>
+<p>以 <code>post_type</code> 区分事件，以 <code>echo</code> 关联动作。事件入口拒绝动作请求，纯动作入口不推送事件。SDK 可以处理连接重建与请求关联。</p>
+<p>浏览器原生 WebSocket 不能自定义请求头。服务端兼容 <code>access_token</code> 查询参数，但 WebUI 采用带 Bearer 的 <code>fetch</code> SSE，以免把令牌写入 URL。自行构建浏览器客户端时也建议使用该方式。</p>
+<h2>SSE</h2>
+<p><code>GET /events</code> 返回 <code>data: &lt;OneBot JSON&gt;</code>。客户端使用带认证请求头的 <code>fetch</code>，并按 SSE 帧分隔读取。WebUI 实现位于 <code>webui/ui.js</code>，包含断线重连。SSE 无持久化 cursor，重连可能存在间隙；<code>GET /api/events</code> 只补充有界最近事件。</p>
+<h2>反向 WebSocket 与 webhook</h2>
+<p><code>ws_reverse</code> 连接的目标由运行时主动建立通用 WS 连接。握手含 <code>X-Client-Role: Universal</code>、<code>X-Self-ID</code>、<code>User-Agent</code>，仅在该连接设置了 Token 时发送 Bearer 头；留空时不携带 Authorization，不发送 WebUI Token。每个已登录账号各建立一条连接，<code>X-Self-ID</code> 为该账号的 OneBot <code>self_id</code>；账号登录完成前不会连接（不会以 <code>X-Self-ID: 0</code> 握手），新增或移除账号时自动建立或关闭对应连接。每条连接只推送所属账号的事件，未指定 <code>account_id</code>/<code>self_id</code> 的动作默认由该账号执行。失败后采用有上限的退避重连；接收端用标准动作对象回调运行时。旧配置 <code>reverseWsUrls</code> 首次启动时迁移为此类连接。</p>
+<p><code>http_post</code> 连接向目标发送 OneBot 事件的 HTTP POST。使用有效令牌时，<code>X-Signature</code> 为 <code>sha1=</code> 加上使用该连接令牌对原始请求体计算的 HMAC-SHA1 十六进制值。接收端验证签名时必须使用原始字节，不要重新序列化 JSON。旧配置 <code>webhookUrls</code> 首次启动时迁移为此类连接。</p>
+<p>每个 webhook 目标使用独立有界队列；积压超过 256 条会丢弃新事件，单次请求超时 10 秒，失败不保证重试。当前版本不提供持久化可靠投递。</p>
+<p>当前版本不解析 webhook 响应体，<strong>不支持 OneBot webhook 快速操作</strong>。接收事件后如需回复或审批，请通过认证后的 HTTP 或 WS 动作入口调用。接收端应返回成功 HTTP 状态，并自行处理持久化与幂等。</p>
+<h2>AstrBot 对接</h2>
+<p>AstrBot 的 OneBot v11 适配器接收反向 WebSocket。先在 AstrBot 创建 OneBot v11 机器人并启动监听，再在本 WebUI「连接配置」新增「反向 WebSocket」，URL 填写 AstrBot 提供的完整地址（包含其路径）。两端在同一台机器时可用 <code>ws://127.0.0.1:6199/ws</code>，端口和路径以你的 AstrBot 配置为准；容器部署填写运行时能访问的宿主机地址。</p>
+<ul><li>AstrBot 的 <code>ws_reverse_token</code> 为空：本连接 Token 也留空。</li><li>AstrBot 设置了 <code>ws_reverse_token</code>：本连接填写完全相同的固定 Token。</li><li>WebUI 登录 Token 只用于管理，不填写到 AstrBot，除非你主动为连接选用了相同字符串。</li></ul>
+<p>连接成功后，AstrBot 使用同一条 WS 发送 <code>{ &quot;action&quot;: &quot;get_friend_list&quot;, &quot;params&quot;: {}, &quot;echo&quot;: &quot;request-1&quot; }</code>，并按 echo 接收动作结果；不需要访问 <code>/api/actions</code> 或登录 WebUI。45 个动作入口共用同一分发器；原生 SDK 未支持的能力仍返回不支持错误，详见动作文档。</p>
+<p>实现参考：<a href="https://github.com/AstrBotDevs/AstrBot/blob/master/astrbot/core/platform/sources/aiocqhttp/aiocqhttp_platform_adapter.py" target="_blank" rel="noopener noreferrer">AstrBot OneBot v11 适配器</a>、<a href="https://github.com/SnowLuma/SnowLuma/blob/main/packages/onebot/src/network/utils.ts" target="_blank" rel="noopener noreferrer">SnowLuma OneBot 鉴权</a>。</p>
+<h2>Node.js SDK</h2>
+<p>SDK 的管理方法及默认 <code>call()</code> 使用 <code>/api/*</code> 和 WebUI Token。若给默认 WS 单独设置了 <code>server.onebotToken</code>，请使用第二个 SDK 实例（<code>token</code> 为该 OneBot Token）调用 <code>connect()</code> / <code>callWs()</code>；连接到独立 HTTP 端口时 <code>call()</code> 使用该连接 Token，管理查询不开放。程序化 <code>startServer()</code> 的 <code>onebotToken</code> 省略时保留旧的单 Token 模式；CLI 始终显式传入独立配置。</p>
+<p>SDK 是 Node.js 客户端，使用 <code>EventEmitter</code> 和 <code>ws</code>，不直接作为浏览器脚本加载。</p>
+<div class="codeblock"><span class="language">ts</span><pre><code>import { DyTranObClient, ActionError } from 'dytranob/sdk';
+
+const client = new DyTranObClient({
+  baseUrl: 'http://127.0.0.1:5088',
+  token: process.env.DYTRANOB_TOKEN,
+  timeout: 15000,
+  reconnect: true,
+});
+
+try {
+  const status = await client.status();
+  console.log(status.accounts);
+  const friends = await client.call&lt;Array&lt;{user_id:number;nickname:string}&gt;&gt;(
+    'get_friend_list', {}, { account_id: 'main' },
+  );
+  console.log(friends);
+} catch (error) {
+  if (error instanceof ActionError) console.error(error.retcode);
+  else throw error;
+}
+
+client.on('event', event =&gt; console.log(event));
+client.on('transport_error', error =&gt; console.error(error.message));
+client.on('connected', () =&gt; console.log('connected'));
+client.on('disconnected', code =&gt; console.log('disconnected', code));
+await client.connect();
+const version = await client.callWs('get_version_info');
+console.log(version);
+// 在应用退出时调用 client.close()，终止 WS、重连与挂起请求。</code></pre></div>
+<p><code>client.call</code>、<code>callWs</code> 与辅助方法返回已解包的 <code>data</code>，失败时抛异常。<code>call</code> 使用 HTTP，<code>connect</code> 订阅 WS 事件，<code>callWs</code> 在通用 WS 上调用动作。断线后挂起的 WS 动作会失败，不自动重发，以避免重复发送消息。</p>
+<p>辅助方法：<code>status</code>、<code>actions</code>、<code>recentEvents</code>、<code>startQrLogin</code>、<code>loginState</code>、<code>sendPrivateMessage</code>、<code>sendGroupMessage</code>。<code>createClient(options)</code> 等价于构造 <code>DyTranObClient</code>。动作选择器命名为 <code>account_id</code> / <code>self_id</code>。</p>
+<p>仓库内先执行 <code>npm run build</code>，再运行 <code>npm exec tsx examples/sdk.ts</code>；发布或本地安装包后可使用 <code>dytranob/sdk</code> 包导入。当前文档不假设该名称已经发布到 npm。</p>
+<h2>MCP</h2>
+<p>先单独启动运行时，再启动 stdio 桥接进程。桥接本身不创建第二个抖音会话。</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>npm run build
+node dist/cli.js mcp --url http://127.0.0.1:5088</code></pre></div>
+<p>通过环境变量 <code>DYTRANOB_TOKEN</code> 提供与运行时相同的令牌。开发模式亦可使用 <code>npm run mcp -- --url http://127.0.0.1:5088</code>。需要发送与管理能力时显式增加 <code>--allow-write</code>。</p>
+<div class="table-wrap"><table><thead><tr><th>工具</th><th>默认提供</th><th>用途</th></tr></thead><tbody><tr><td><code>douyin_status</code></td><td>是</td><td>运行时与账号状态</td></tr><tr><td><code>douyin_actions</code></td><td>是</td><td>动作目录及参数 Schema</td></tr><tr><td><code>douyin_events</code></td><td>是</td><td>最近事件</td></tr><tr><td><code>douyin_query</code></td><td>是</td><td>白名单查询动作；ID 映射只影响本地元数据</td></tr><tr><td><code>douyin_resolve_id</code></td><td>是</td><td>创建稳定 ID 别名，不发送消息</td></tr><tr><td><code>douyin_write</code></td><td>否</td><td><code>--allow-write</code> 开启后的发送、撤回与群管理白名单</td></tr></tbody></table></div>
+<p>虽然默认禁止平台写入，ID 映射仍可写入本地元数据。<code>douyin_write</code> 不会绕过原生适配器的权限和不支持能力。MCP stdout 仅用于协议；日志写入 stderr。</p>
+<p>MCP 客户端配置示例，路径需改为你的绝对路径：</p>
+<div class="codeblock"><span class="language">json</span><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;dytranob&quot;: {
+      &quot;command&quot;: &quot;node&quot;,
+      &quot;args&quot;: [&quot;E:/DyTranOb/dist/cli.js&quot;, &quot;mcp&quot;, &quot;--url&quot;, &quot;http://127.0.0.1:5088&quot;],
+      &quot;env&quot;: { &quot;DYTRANOB_TOKEN&quot;: &quot;YOUR_TOKEN&quot; }
+    }
+  }
+}</code></pre></div>
+<p>也可从 <code>dytranob/mcp</code> 导入 <code>createMcpServer(client,{allowWrite:false})</code>，使用官方 SDK 的 <code>StdioServerTransport</code> 连接；使用后需关闭 MCP server 与 SDK client。</p></section>
+<section id="development"><div class="chapter-label">DYTRANOB DOCUMENTATION / DEVELOPMENT</div><h1>扩展与测试</h1>
+<h2>本地开发</h2>
+<div class="codeblock"><span class="language">sh</span><pre><code>npm install
+npm run dev -- --mock
+npm run typecheck
+npm test
+npm run build</code></pre></div>
+<p><code>npm run dev</code> 使用 tsx 运行源码；<code>npm run build</code> 将 TypeScript 与类型声明写入 <code>dist</code>；WebUI 为原生静态文件，无独立前端打包步骤。<code>npm run check</code> 串行运行类型检查、测试和构建。</p>
+<p>构建还会从编译后的运行时动作定义生成 <code>docs/actions.json</code>，并把 <code>docs/astrbot.md</code> 等章节合并为 <code>docs/readme.html</code>。修改动作后运行完整 <code>npm run build</code>，避免机器可读文档与运行时代码不同步；单独的 <code>npm run docs:build</code> 使用现有 dist。</p>
+<p>Windows 可通过仓库根目录 <code>start.cmd</code> 启动真实账号运行时、<code>start-mock.cmd</code> 启动离线演示、<code>dytranob.cmd</code> 查询状态与调用动作、<code>mcp.cmd</code> 启动 MCP 桥接。使用前先安装依赖；MCP 需要已启动的运行时与相同 <code>DYTRANOB_TOKEN</code>。命令行帮助见 <code>npm run dev -- --help</code>。</p>
+<h2>嵌入运行时</h2>
+<div class="codeblock"><span class="language">ts</span><pre><code>import { Runtime, MockAdapter, startServer } from 'dytranob';
+
+const runtime = new Runtime({
+  dataDir: './data/embedded',
+  accounts: [{ id: 'demo', adapter: new MockAdapter({accountId:'demo'}) }],
+});
+runtime.on('event', event =&gt; console.log(event));
+runtime.on('diagnostic', item =&gt; console.error(item));
+await runtime.start();
+const server = await startServer(runtime, {
+  host: '127.0.0.1', port: 5088,
+  token: process.env.DYTRANOB_TOKEN || 'set-a-long-random-token',
+});
+// 应用退出时先 await runtime.stop()，再 await server.close()。</code></pre></div>
+<p>仅需要程序内动作时可直接 <code>await runtime.execute({action:'get_status'})</code>，不启动 HTTP 服务。直接嵌入的 <code>startServer</code> 调用者负责提供访问令牌；CLI 会自动补齐空令牌。</p>
+<p>需要与 CLI 相同的动态连接管理时，创建 <code>ConnectionManager(runtime,{dataDir,token,initial})</code>，调用 <code>start()</code>，并把实例通过 <code>startServer</code> 的 <code>connections</code> 选项提供给管理服务。<code>list</code>、<code>create</code>、<code>update</code>、<code>remove</code> 对应 WebUI 管理能力；关闭时调用 <code>close()</code> 释放独立传输。连接专用服务不能再次开放管理功能，以免凭据权限扩散。</p>
+<p>关闭时，<code>runtime.stop()</code> 拒绝新动作，并等待已接受的动作与二维码请求完成，再断开适配器和存储；随后关闭传输，使已在处理中的动作有机会返回确认。</p>
+<h2>添加适配器</h2>
+<p>适配器是编译时源码扩展，项目不提供插件加载、插件市场或第三方脚本执行系统。遵循 <code>src/adapters/types.ts</code> 中的 <code>NativeAdapter</code>：</p>
+<ol><li>实现 <code>connect</code>、<code>disconnect</code>、<code>isOnline</code>，保证可清理监听器和原生资源。</li><li>实现用户、好友、群、成员查询；所有平台 ID 保持字符串。</li><li>将原生消息转为 <code>NativeMessage</code>，使用 <code>publish({type:'message',message})</code> 发布。</li><li>通过 <code>publish</code> 提供连接、请求与通知事件；适配器内不直接生成 OneBot wire 对象。</li><li>实现 <code>sendMessage</code>、撤回、群操作与申请操作。缺失能力抛出 <code>UnsupportedAdapterOperation</code>，不要返回假成功。</li><li>实现 <code>startQrLogin</code> / <code>getLoginState</code> 或适合平台的状态描述。</li><li>在 <code>Runtime</code> 构造参数中注册适配器；若需配置与 CLI 创建，同时扩展配置枚举和构造工厂。</li></ol>
+<p>当前 <code>kind</code> 类型限制为 <code>douyin | mock</code>，添加其他平台时需要相应扩大联合类型。<code>DouyinAdapter</code> 的 <code>createClient</code> 依赖注入点用于隔离原生 SDK 生命周期测试，避免测试访问真实账号。</p>
+<p>适配器发布诊断应使用 <code>diagnostic</code>；禁止将 Cookie、令牌、QR 内容、平台验证链接和请求头写入诊断。运行时进一步做有限脱敏，不能代替适配器自身约束。</p>
+<h2>增加动作</h2>
+<p>动作应在 <code>src/runtime.ts</code> 的目录中定义名称、描述与 JSON Schema，并在调度器实现参数校验与行为。WebUI 会从 <code>/api/actions</code> 动态加载，无需手工添加动作按钮。</p>
+<p>当前 Schema 用于发现和编辑提示，运行时仍需明确校验所有新参数；不要依赖前端校验。若动作允许通过 MCP 使用，应同时检查 <code>READ_ACTIONS</code> / <code>WRITE_ACTIONS</code> 白名单、输入 Schema 与工具注解，避免读取通道间接触发平台写操作。</p>
+<h2>验证策略</h2>
+<ul><li>使用 Mock 验证消息转换、OneBot 行为、多账号、ID 持久化、动作错误与传输组合。</li><li>注入上游 SDK 替身验证原生登录状态机、清理、事件映射与不支持能力。</li><li>使用临时独立数据目录，不与已登录原生会话共用目录。</li><li>测试传输鉴权、跨源拒绝、WS echo、SSE 事件、webhook 签名、MCP 写入默认关闭与 SDK 超时 / 重连。</li><li>验证连接 CRUD 的真实监听、重启持久化、Token 不回传、端口冲突回滚与管理入口隔离；登录页在校验成功前不加载工作空间，401 后清除受保护视图。</li><li>真实账号验收单独进行：扫码登录、会话恢复、私信 / 群文本、图片、群管理与平台验证均需账号权限确认。自动化测试通过不表示这些步骤已完成。</li></ul>
+<h2>文档与 WebUI</h2>
+<p>源文档位于 <code>docs/*.md</code>，WebUI 文档入口为 <code>/docs/readme.html</code>。修改源文档后执行：</p>
+<div class="codeblock"><span class="language">sh</span><pre><code>node docs/build.mjs</code></pre></div>
+<p>生成的静态文档无第三方脚本，可通过服务端打开或直接在浏览器打开文件。WebUI 使用固定浅色设计与 CSS 变量；账号和事件数据写入 DOM 时必须使用 <code>textContent</code>，不得把原生消息插入 <code>innerHTML</code>。保持键盘焦点、表单标签与窄屏布局可用。</p>
+<p>SDK 示例位于 <code>examples/sdk.ts</code>；嵌入示例位于 <code>examples/embedded.ts</code>。先执行 <code>npm run build</code>，再使用 <code>npm exec tsx examples/sdk.ts</code> 或 <code>npm exec tsx examples/embedded.ts</code>。示例默认不向真实联系人发送消息。</p></section>
+<section id="security"><div class="chapter-label">DYTRANOB DOCUMENTATION / SECURITY</div><h1>安全与运维</h1>
+<h2>访问与部署</h2>
+<p>CLI 默认只监听 <code>127.0.0.1:5088</code>，WebUI / 管理 API 和 SSE 始终需要 WebUI Token。未配置时首次生成并保存到 <code>dataDir/webui.json</code>，后续重启复用。标准 OneBot HTTP / WS 使用独立 Token，默认留空不鉴权。<code>/health</code> 与静态 WebUI / 文档公开。<code>/media/&lt;随机标识&gt;</code> 是单张图片的临时凭证地址，持有者可直接读取，不使用管理 Token；详见扩展文档。</p>
+<p>WebUI 先显示独立的 Token 登录页，通过服务端认证后才加载工作空间。所有数据请求继续使用请求头 Bearer 认证，包括 SSE；登录页不是数据接口的认证替代。令牌默认只存在标签页内存，勾选保存时使用 <code>sessionStorage</code>，不会写入 URL 或 <code>localStorage</code>。退出登录会清除当前凭据并返回登录页；凭据失效时也返回登录页。</p>
+<p>控制台远程监听需要 <code>server.allowRemote: true</code> 与非空 WebUI Token；默认端口的 OneBot 入口如需鉴权须另设 <code>server.onebotToken</code>；建议置于 HTTPS 反向代理后，并限制网络访问。运行时不内置 TLS、用户账号体系、细粒度 RBAC、逐动作权限或审计存储。一个访问令牌能操作所有配置账号。</p>
+<p>HTTP / WS 检查存在的 Origin 头，拒绝不匹配的来源；这不是替代令牌或网络隔离的权限系统。服务设置内容类型、防 MIME 嗅探与 CSP，浏览器端不执行事件里的 HTML。</p>
+<p>服务端为兼容 OneBot 客户端支持 <code>access_token</code> 查询参数，但建议使用请求头；URL 凭据可能留在客户端、代理或接收端日志。SDK 使用请求头，不跟随 HTTP 重定向。</p>
+<h2>数据目录</h2>
+<p><code>dataDir/accounts</code> 含原生会话；<code>onebot-store.json</code> 含 ID 映射与最近消息正文；<code>connections.json</code> 可能包含独立连接 Token；<code>webui.json</code> 保存自动生成的固定 WebUI Token。它们与二维码、验证链接、环境令牌同属敏感数据，不提交到 Git，不公开打包，不放入网页静态目录。连接管理 API 返回凭据配置状态，不返回 Token 明文。</p>
+<p>备份时先停止运行时，同时备份原生会话与映射文件；恢复后保留相同账号 ID。只恢复其中一部分可能使历史别名、会话或引用路由失效。ID 别名是运行时本地数据，不能直接跨独立实例共享。</p>
+<p>Unix 文件模式会尽力限制权限；Windows 需通过文件 ACL 控制用户访问。不要依赖跨平台 <code>mode</code> 数值替代 Windows 权限设置。</p>
+<h2>外部连接与媒体</h2>
+<p>webhook 会收到消息和事件正文；反向 WS 接收端能调用动作，并可能收到访问令牌。只配置可信服务。当前版本不处理 webhook 返回的快速操作；回复和审批应使用认证动作入口。</p>
+<p>WebUI 可即时管理独立 HTTP / WS 监听和出站连接。连接级别的 Token 独立保存；留空表示不鉴权，不会发送控制台 Token；控制台凭据依然具有全部账号和连接管理能力。非本机监听需要显式开启远程绑定并有有效令牌。</p>
+<p>图片发送会触发原生 SDK 访问指定 HTTPS URL；不要将不可信用户提供的任意链接直接作为媒体发送地址。应用若向外提供动作代理，应自行增加目标校验、媒体域名白名单、频率限制与业务权限。</p>
+<p>MCP 默认只提供平台查询与本地 ID 映射。<code>--allow-write</code> 开放实际发送、撤回、群操作、图片上传与评论发布，使用者需要控制可调用该工具的客户端与模型工作流。MCP 工具注解是能力说明，不是用户权限系统。</p>
+<h2>常见排障</h2>
+<div class="table-wrap"><table><thead><tr><th>现象</th><th>检查方法</th></tr></thead><tbody><tr><td>WebUI 401 / 凭据无效</td><td>检查当前启动日志令牌；自动令牌在同一数据目录下重启不变，检查是否切换了数据目录或配置；<code>DYTRANOB_TOKEN</code> 优先级最高</td></tr><tr><td>网络连接保存失败 / 1409</td><td>检查名称和连接 ID、监听端口是否被占用、目标 URL 协议与远程绑定设置；失败后原设置保留</td></tr><tr><td>修改初始连接配置后未生效</td><td>已有 <code>dataDir/connections.json</code> 时以持久化列表为准，通过 WebUI 或 API 修改</td></tr><tr><td>连接状态为错误</td><td>在卡片查看错误并检查监听地址和端口；修正后保存或重新启用</td></tr><tr><td>账号离线 / 1503</td><td>查看二维码状态，完成 App 确认或平台验证；检查网络与会话目录</td></tr><tr><td>Unknown user/group/message ID</td><td>不要直接填原生长数字；先查询列表或 <code>dy_resolve_id</code>，并确认账号选择器</td></tr><tr><td>多账号调用失败</td><td>指定 <code>account_id</code> 或有效 <code>self_id</code>；二者同时出现必须一致</td></tr><tr><td>撤回 / 引用失败</td><td>仅保证当前进程观察到的路由可尝试操作；平台时间窗与权限仍有效</td></tr><tr><td>修改群名或好友审批 1404</td><td>上游 1.1.0 无公开接口，属于明确兼容边界</td></tr><tr><td>视频 / 图文发送失败</td><td>图文 / 多图按顺序拆分，最多 20 条；检查 Base64 格式、图片大小与部分发送错误，视频文件发送仍不支持</td></tr><tr><td>数据目录被占用</td><td>检查另一个运行时是否仍运行；不要直接移除活动进程的 runtime.lock</td></tr><tr><td>webhook 丢失事件</td><td>查看接收端响应、网络、10 秒超时与 256 条队列限制；实现业务端持久化</td></tr><tr><td>MCP 没有发送工具</td><td>默认关闭；确有需要时给桥接进程增加 <code>--allow-write</code></td></tr><tr><td>Node.js SQLite 相关错误</td><td>使用 Node.js &gt;=22.5，并检查上游 SDK 对该 Node.js 版本的要求</td></tr></tbody></table></div>
+<p>当前实现不保证平台长期稳定性或完全协议兼容。涉及真实账号的登录、媒体与管理动作尚未完成真实端到端验收；请在自己的授权账号与测试会话中逐项验证。</p></section><footer>DyTranOb 0.1.0 · 本页面由 docs/*.md 生成。运行 node docs/build.mjs 更新。</footer></main></body></html>

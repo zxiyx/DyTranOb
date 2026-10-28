@@ -1,0 +1,9 @@
+{
+  "server": { "host": "127.0.0.1", "port": 5088, "token": "", "onebotToken": "" },
+  "dataDir": "./data",
+  "accounts": [{ "id": "main", "type": "douyin" }],
+  "heartbeatInterval": 15000,
+  "connections": [],
+  "webhookUrls": [],
+  "reverseWsUrls": []
+}

@@ -1,0 +1,40 @@
+{
+  "name": "dytranob",
+  "version": "0.1.0",
+  "description": "Douyin IM interoperability runtime with OneBot v11, WebUI, SDK and MCP",
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22.5.0" },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./sdk": { "types": "./dist/sdk.d.ts", "import": "./dist/sdk.js" },
+    "./mcp": { "types": "./dist/mcp.d.ts", "import": "./dist/mcp.js" }
+  },
+  "bin": { "dytranob": "./dist/cli.js" },
+  "files": ["dist", "webui", "docs", "README.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "dytranob.config.example.json", "*.cmd", "*.bat"],
+  "scripts": {
+    "dev": "tsx src/cli.ts",
+    "build": "tsc -p tsconfig.build.json && node docs/build.mjs",
+    "docs:build": "node docs/build.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test --test-concurrency=1 test/*.test.ts",
+    "start": "node dist/cli.js",
+    "mcp": "tsx src/cli.ts mcp",
+    "check": "npm run typecheck && npm test && npm run build",
+    "prepack": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.25.0",
+    "douyin-im": "1.1.0",
+    "ws": "^8.18.3",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.19.0",
+    "@types/ws": "^8.18.1",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  }
+}
