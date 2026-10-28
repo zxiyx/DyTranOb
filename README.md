@@ -4,7 +4,7 @@
 
 **让抖音接入你的机器人生态。**
 
-基于 TypeScript 与 douyin-im 的抖音 OneBot v11 互操作运行时。
+基于 TypeScript 的 抖音 OneBot v11 互操作运行时，将抖音原生会话转换为 OneBot v11 动作与事件。
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2022.5-339933?logo=nodedotjs&logoColor=white)
